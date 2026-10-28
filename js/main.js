@@ -52,7 +52,7 @@
                      || links[0];
 
   // На мобильных линия скрыта через CSS — тогда не трогаем
-  const isDesktop = () => window.matchMedia('(min-width: 1101px)').matches;
+    const isDesktop = () => window.matchMedia('(min-width: 1181px)').matches;
 
   // Измеряем позицию пункта относительно списка
   const measure = (link) => {
