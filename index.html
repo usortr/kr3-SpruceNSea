@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Spruce & Sea — бутик-отель и коттеджи у моря в еловом лесу. Уют, природа и тишина." />
+  <title>Spruce &amp; Sea — отель и коттеджи у моря</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 (сетка + утилиты) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous">
+
+  <!-- Наши стили — всегда после Bootstrap -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page">
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="navbar-site">
+    <div class="container">
+      <div class="navbar-site__inner">
+
+        <a href="index.html" class="logo" aria-label="Spruce & Sea — на главную">
+          <span class="logo__mark" aria-hidden="true">❦</span>
+          <span class="logo__text">Spruce&nbsp;&amp;&nbsp;Sea</span>
+        </a>
+
+        <div class="navbar-site__actions">
+
+          <button
+            class="burger"
+            type="button"
+            aria-label="Открыть меню"
+            aria-expanded="false"
+            aria-controls="site-nav">
+            <span class="burger__line"></span>
+            <span class="burger__line"></span>
+            <span class="burger__line"></span>
+          </button>
+
+          <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
+            <ul class="site-nav__list" data-nav-list>
+              <li class="site-nav__item">
+                <a href="index.html" class="site-nav__link site-nav__link--active">Главная</a>
+              </li>
+              <li class="site-nav__item">
+                <a href="catalog.html?type=stays" class="site-nav__link">Номера&nbsp;&amp;&nbsp;коттеджи</a>
+              </li>
+              <li class="site-nav__item">
+                <a href="catalog.html?type=spa" class="site-nav__link">СПА&nbsp;&amp;&nbsp;баня</a>
+              </li>
+              <li class="site-nav__item">
+                <a href="catalog.html?type=bikes" class="site-nav__link">Велосипеды</a>
+              </li>
+              <li class="site-nav__item">
+                <a href="catalog.html?type=restaurant" class="site-nav__link">Ресторан</a>
+              </li>
+              <li class="site-nav__item">
+                <a href="contacts.html" class="site-nav__link">Контакты</a>
+              </li>
+            </ul>
+            <!-- Бегающая линия -->
+            <span class="site-nav__underline" data-nav-underline aria-hidden="true"></span>
+          </nav>
+
+          <button
+            class="cart"
+            type="button"
+            aria-label="Открыть корзину заказа"
+            aria-expanded="false"
+            aria-controls="cart-drawer"
+            data-cart-toggle>
+            <svg class="cart__icon" width="22" height="22" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="20" r="1.4"/>
+              <circle cx="18" cy="20" r="1.4"/>
+              <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6"/>
+            </svg>
+            <span class="cart__badge" data-cart-count hidden>0</span>
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= CART DRAWER ================= -->
+  <div class="cart-drawer" id="cart-drawer" data-cart-drawer hidden>
+    <div class="cart-drawer__backdrop" data-cart-close></div>
+
+    <aside class="cart-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+      <header class="cart-drawer__head">
+        <h2 class="cart-drawer__title" id="cart-title">Ваш заказ</h2>
+        <button class="cart-drawer__close" type="button" aria-label="Закрыть корзину" data-cart-close>
+          <span aria-hidden="true">×</span>
+        </button>
+      </header>
+
+      <div class="cart-drawer__body">
+        <div class="cart-empty">
+          <span class="cart-empty__icon" aria-hidden="true">🛒</span>
+          <p class="cart-empty__title">Заказ пока пуст</p>
+          <p class="cart-empty__text">
+            Начните с выбора жилья — потом добавите СПА, велосипеды или ужин.
+          </p>
+          <a href="catalog.html?type=stays" class="cart-empty__link">
+            Перейти к жилью →
+          </a>
+        </div>
+      </div>
+
+      <footer class="cart-drawer__foot" hidden data-cart-foot>
+        <div class="cart-drawer__total">
+          <span>Итого</span>
+          <strong data-cart-total>0 ₽</strong>
+        </div>
+        <a href="checkout.html" class="btn btn--primary cart-drawer__checkout">
+          Оформить заказ
+        </a>
+      </footer>
+    </aside>
+  </div>
+
+  <main class="page__main">
+
+    <!-- ================= HERO ================= -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__overlay"></div>
+      <div class="container hero__container">
+        <div class="hero__content">
+          <p class="hero__eyebrow">Отель &amp; коттеджи · Карельский перешеек</p>
+          <h1 class="hero__title" id="hero-title">
+            Тишина елового леса<br>и шёпот моря
+          </h1>
+          <p class="hero__slogan">
+            «Здесь время идёт медленнее —<br class="hero__slogan-break"> и это главная роскошь».
+          </p>
+          <p class="hero__lead">
+            Spruce &amp; Sea — место, где сосны пахнут смолой, а за завтраком
+            слышно прибой. Уютные номера в отеле и приватные коттеджи с террасами
+            и видом на воду.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= STORY ================= -->
+    <section class="story" aria-labelledby="story-title">
+      <div class="container">
+        <div class="row align-items-center g-5">
+
+          <div class="col-lg-6">
+            <div class="story__media">
+              <img
+                class="story__image"
+                src="https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?auto=format&fit=crop&w=1200&q=80"
+                alt="Еловый лес на берегу моря на закате"
+                loading="lazy">
+              <span class="story__badge">с 2016 года</span>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <header class="section-head section-head--left">
+              <p class="section-head__eyebrow">История места</p>
+              <h2 class="section-head__title" id="story-title">
+                Дом между лесом и водой
+              </h2>
+            </header>
+
+            <p class="story__text">
+              Spruce &amp; Sea вырос из маленькой рыбацкой усадьбы на берегу
+              Финского залива. Мы сохранили старые сосны, проложили тропы к воде
+              и построили дома так, чтобы из каждого окна было видно или море,
+              или лес — но никогда соседский забор.
+            </p>
+            <p class="story__text">
+              Нас не так много: 14 номеров в основном доме и 6 отдельных коттеджей.
+              Мы сознательно держим маленький масштаб — чтобы помнить гостей
+              по именам и чтобы у каждого было своё тихое место.
+            </p>
+
+            <dl class="story__facts">
+              <div class="story__fact">
+                <dt class="story__fact-label">Номеров</dt>
+                <dd class="story__fact-value">14</dd>
+              </div>
+              <div class="story__fact">
+                <dt class="story__fact-label">Коттеджей</dt>
+                <dd class="story__fact-value">6</dd>
+              </div>
+              <div class="story__fact">
+                <dt class="story__fact-label">До моря</dt>
+                <dd class="story__fact-value">120&nbsp;м</dd>
+              </div>
+            </dl>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BOOKING TRAIL ================= -->
+    <section class="trail-section" aria-labelledby="trail-title">
+      <div class="container">
+
+        <header class="section-head section-head--center">
+          <p class="section-head__eyebrow">Как заказать</p>
+          <h2 class="section-head__title" id="trail-title">Тропа бронирования</h2>
+          <p class="section-head__sub">
+            Пять шагов — от дат до подтверждения. Без звонков и лишних форм.
+          </p>
+        </header>
+
+        <p class="trail__hint" aria-hidden="true">Шаг 1 из 5 · листайте вправо →</p>
+
+        <ol class="trail" aria-label="Порядок бронирования">
+          <li class="trail__step trail__step--active">
+            <span class="trail__dot" aria-hidden="true">1</span>
+            <div class="trail__card">
+              <span class="trail__icon" aria-hidden="true">📅</span>
+              <h3 class="trail__title">Даты</h3>
+              <p class="trail__text">Выберите заезд и выезд — покажем свободные варианты.</p>
+            </div>
+          </li>
+
+          <li class="trail__step">
+            <span class="trail__dot" aria-hidden="true">2</span>
+            <div class="trail__card">
+              <span class="trail__icon" aria-hidden="true">👥</span>
+              <h3 class="trail__title">Гости</h3>
+              <p class="trail__text">Сколько взрослых, детей и питомцев с вами.</p>
+            </div>
+          </li>
+
+          <li class="trail__step">
+            <span class="trail__dot" aria-hidden="true">3</span>
+            <div class="trail__card">
+              <span class="trail__icon" aria-hidden="true">🏡</span>
+              <h3 class="trail__title">Размещение</h3>
+              <p class="trail__text">Номер в отеле или отдельный коттедж — на ваш вкус.</p>
+            </div>
+          </li>
+
+          <li class="trail__step">
+            <span class="trail__dot" aria-hidden="true">4</span>
+            <div class="trail__card">
+              <span class="trail__icon" aria-hidden="true">🍽</span>
+              <h3 class="trail__title">Дополнения</h3>
+              <p class="trail__text">Завтраки, СПА, трансфер — можно добавить сразу.</p>
+            </div>
+          </li>
+
+          <li class="trail__step">
+            <span class="trail__dot" aria-hidden="true">5</span>
+            <div class="trail__card">
+              <span class="trail__icon" aria-hidden="true">✓</span>
+              <h3 class="trail__title">Подтверждение</h3>
+              <p class="trail__text">Оплата и письмо с деталями — на этом всё.</p>
+            </div>
+          </li>
+        </ol>
+
+      </div>
+    </section>
+
+    <!-- ================= EXPLORE ================= -->
+    <section class="explore" aria-labelledby="explore-title">
+      <div class="container">
+
+        <header class="section-head section-head--center">
+          <p class="section-head__eyebrow">Что вас ждёт</p>
+          <h2 class="section-head__title" id="explore-title">Выберите своё</h2>
+          <p class="section-head__sub">Четыре способа провести время — и все у моря.</p>
+        </header>
+
+        <div class="row g-4">
+          <div class="col-sm-6 col-lg-3">
+            <a href="catalog.html?type=stays" class="explore-card explore-card--rooms">
+              <span class="explore-card__icon" aria-hidden="true">🛏</span>
+              <h3 class="explore-card__title">Номера</h3>
+              <p class="explore-card__text">Светлые комнаты с панорамными окнами и видом на лес.</p>
+              <span class="explore-card__link">Перейти →</span>
+            </a>
+          </div>
+
+          <div class="col-sm-6 col-lg-3">
+            <a href="catalog.html?type=stays" class="explore-card explore-card--cottages">
+              <span class="explore-card__icon" aria-hidden="true">🏡</span>
+              <h3 class="explore-card__title">Коттеджи</h3>
+              <p class="explore-card__text">Отдельные дома с камином, кухней и собственной террасой.</p>
+              <span class="explore-card__link">Перейти →</span>
+            </a>
+          </div>
+
+          <div class="col-sm-6 col-lg-3">
+            <a href="catalog.html?type=spa" class="explore-card explore-card--spa">
+              <span class="explore-card__icon" aria-hidden="true">💧</span>
+              <h3 class="explore-card__title">СПА &amp; баня</h3>
+              <p class="explore-card__text">Финская сауна, купель и массаж после прогулки у моря.</p>
+              <span class="explore-card__link">Перейти →</span>
+            </a>
+          </div>
+
+          <div class="col-sm-6 col-lg-3">
+            <a href="catalog.html?type=restaurant" class="explore-card explore-card--restaurant">
+              <span class="explore-card__icon" aria-hidden="true">🍽</span>
+              <h3 class="explore-card__title">Ресторан</h3>
+              <p class="explore-card__text">Локальные продукты, северная кухня и завтраки у окна.</p>
+              <span class="explore-card__link">Перейти →</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-4 site-footer__grid">
+
+        <div class="col-12 col-md-6 col-lg-4">
+          <a href="index.html" class="logo logo--footer">
+            <span class="logo__mark" aria-hidden="true">❦</span>
+            <span class="logo__text">Spruce &amp; Sea</span>
+          </a>
+          <p class="site-footer__desc">
+            Бутик-отель и коттеджи у моря. Уют, природа и тишина круглый год.
+          </p>
+        </div>
+
+        <div class="col-6 col-md-3 col-lg-2">
+          <h3 class="site-footer__title">Контакты</h3>
+          <ul class="site-footer__list">
+            <li><a href="tel:+78120000000">+7 (812) 000-00-00</a></li>
+            <li><a href="mailto:hello@spruceandsea.ru">hello@spruceandsea.ru</a></li>
+          </ul>
+        </div>
+
+        <div class="col-6 col-md-3 col-lg-3">
+          <h3 class="site-footer__title">Навигация</h3>
+          <ul class="site-footer__list">
+            <li><a href="catalog.html?type=stays">Номера &amp; коттеджи</a></li>
+            <li><a href="catalog.html?type=spa">СПА &amp; баня</a></li>
+            <li><a href="catalog.html?type=bikes">Велосипеды</a></li>
+            <li><a href="catalog.html?type=restaurant">Ресторан</a></li>
+            <li><a href="contacts.html">Контакты</a></li>
+          </ul>
+        </div>
+
+        <div class="col-12 col-md-12 col-lg-3">
+          <h3 class="site-footer__title">Адрес</h3>
+          <p class="site-footer__address">
+            Ленинградская обл.,<br>
+            Приморское ш., 12
+          </p>
+          <ul class="site-footer__list site-footer__list--social">
+            <li><a href="#" aria-label="Telegram">Telegram</a></li>
+            <li><a href="#" aria-label="ВКонтакте">ВКонтакте</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="site-footer__bottom">
+        <p class="site-footer__copy">© 2025 Spruce &amp; Sea. Все права защищены.</p>
+        <p class="site-footer__legal">ИНН 0000000000 · ОГРН 0000000000000</p>
+        <p class="site-footer__legal">
+          <a href="privacy.html">Политика конфиденциальности</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
