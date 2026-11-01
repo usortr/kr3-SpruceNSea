@@ -6,21 +6,63 @@
 
 /* ---------- 1. Токены ---------- */
 :root {
-  /* v5: гамма чуть темнее и глуше */
+  /* --- 1.1 Основная (светлая) гамма --- */
   --clr-bg: #ece8e0;
   --clr-surface: #f3efe7;
-  --clr-surface-2: #e8e3d8;      /* v5: для карточек-опций — темнее surface */
+  --clr-surface-2: #e8e3d8;
   --clr-dark: #18211c;
   --clr-muted: #4c5a52;
   --clr-accent: #284f44;
+  --clr-accent-strong: #1f3f36;
   --clr-accent-2: #6d9587;
   --clr-sand: #c9b9a1;
   --clr-line: #d6cfc2;
+
+  /* --- 1.2 Hero (тёмная гамма) --- */
+  --clr-hero-overlay-1: rgba(16, 26, 22, .86);
+  --clr-hero-overlay-2: rgba(16, 26, 22, .55);
+  --clr-hero-overlay-3: rgba(16, 26, 22, .35);
+  --clr-hero-text: #ffffff;
+  --clr-hero-text-soft: rgba(255, 255, 255, .86);
+
+  /* --- 1.3 Общие затемнения (переходы между блоками) --- */
+  --clr-overlay-fade-strong: rgba(0, 0, 0, .9);
+  --clr-overlay-fade-mid: rgba(0, 0, 0, .7);
+  --clr-overlay-fade-soft: rgba(0, 0, 0, .55);
+  --clr-overlay-fade-zero: rgba(0, 0, 0, 0);
+
+  /* --- 1.4 Story (гамма «История места») --- */
+  --clr-story-title: #9caea4;
+  --clr-story-accent: #146b52;
+  --clr-story-text: #708479;
+  --clr-story-badge-bg: rgba(243, 239, 231, .95);
+  --clr-story-badge-text: #146b52;
+
+  /* --- 1.5 Gold (карточки Explore) --- */
+  --clr-gold: #b8935a;
+  --clr-gold-strong: #8a6a35;
+  --clr-gold-text: #6b4e1c;
+  --clr-gold-text-soft: #5a4a2e;
+  --clr-gold-outline: #b8935a;
+  --clr-gold-shadow: rgba(0, 0, 0, .35);
+
+  /* --- 1.6 Footer (тёмная гамма) --- */
+  --clr-footer-bg: #0a0f0d;
+  --clr-footer-text: rgba(255, 255, 255, .72);
+  --clr-footer-text-soft: rgba(255, 255, 255, .55);
+  --clr-footer-text-dim: rgba(255, 255, 255, .4);
+  --clr-footer-title: #ffffff;
+  --clr-footer-line: rgba(255, 255, 255, .08);
+
+  /* --- 1.7 Фокус --- */
+  --clr-focus: var(--clr-accent);
+  --clr-focus-offset: 3px;
 
   --radius: 16px;
   --radius-sm: 10px;
   --shadow-sm: 0 2px 10px rgba(24, 33, 28, .07);
   --shadow-md: 0 12px 30px rgba(24, 33, 28, .16);
+  --shadow-cart: -20px 0 40px rgba(24, 33, 28, .22);
 
   --transition: .25s ease;
   --transition-underline: .3s cubic-bezier(.4, 0, .2, 1);
@@ -60,8 +102,8 @@ h1, h2, h3 {
 
 a:focus-visible,
 button:focus-visible {
-  outline: 2px solid var(--clr-accent);
-  outline-offset: 3px;
+  outline: 2px solid var(--clr-focus);
+  outline-offset: var(--clr-focus-offset);
   border-radius: 6px;
 }
 
@@ -80,7 +122,7 @@ button:focus-visible {
   letter-spacing: .3px;
   color: var(--clr-dark);
 }
-.logo--footer .logo__text { color: #fff; }
+.logo--footer .logo__text { color: var(--clr-footer-title); }
 .logo--footer .logo__mark { color: var(--clr-accent-2); }
 
 /* ---------- 4. Navbar ---------- */
@@ -88,7 +130,7 @@ button:focus-visible {
   position: fixed;
   inset: 0 0 auto 0;
   height: var(--navbar-h);
-  background: rgba(236, 232, 224, .92);   /* v5: под новый bg */
+  background: rgba(236, 232, 224, .92);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--clr-line);
   z-index: 100;
@@ -149,12 +191,12 @@ button:focus-visible {
 }
 .site-nav__underline--visible { opacity: 1; }
 
-@media (max-width: 1180px) {            /* v5: брейкпоинт поднят */
+@media (max-width: 1180px) {
   .site-nav__underline { display: none; }
 }
 
-/* ---------- 4.2 Cart button ---------- */
-.cart {
+/* ---------- 4.2 Cart toggle (кнопка) ---------- */
+.cart-toggle {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -169,14 +211,14 @@ button:focus-visible {
   transition: background var(--transition), border-color var(--transition), color var(--transition);
   flex-shrink: 0;
 }
-.cart:hover {
+.cart-toggle:hover {
   background: var(--clr-accent);
   border-color: var(--clr-accent);
-  color: #fff;
+  color: var(--clr-hero-text);
 }
-.cart__icon { display: block; }
+.cart-toggle__icon { display: block; }
 
-.cart__badge {
+.cart-toggle__badge {
   position: absolute;
   top: -4px;
   right: -4px;
@@ -185,7 +227,7 @@ button:focus-visible {
   padding: 0 6px;
   border-radius: 999px;
   background: var(--clr-accent);
-  color: #fff;
+  color: var(--clr-hero-text);
   font-size: 12px;
   font-weight: 600;
   line-height: 20px;
@@ -193,7 +235,7 @@ button:focus-visible {
   border: 2px solid var(--clr-bg);
   transition: background var(--transition);
 }
-.cart:hover .cart__badge { background: #1f3f36; }
+.cart-toggle:hover .cart-toggle__badge { background: var(--clr-accent-strong); }
 
 /* ---------- 4.3 Burger ---------- */
 .burger {
@@ -245,7 +287,7 @@ button:focus-visible {
   bottom: 0;
   width: min(420px, 100%);
   background: var(--clr-bg);
-  box-shadow: -20px 0 40px rgba(24, 33, 28, .22);
+  box-shadow: var(--shadow-cart);
   display: flex;
   flex-direction: column;
   animation: cartSlide .25s ease;
@@ -315,33 +357,33 @@ button:focus-visible {
 }
 .cart-drawer__checkout { width: 100%; }
 
-.cart-empty {
+.cart-drawer__empty {
   text-align: center;
   padding: 40px 8px;
 }
-.cart-empty__icon {
+.cart-drawer__empty-icon {
   font-size: 40px;
   display: block;
   margin-bottom: 16px;
   opacity: .7;
 }
-.cart-empty__title {
+.cart-drawer__empty-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: 24px;
   font-weight: 600;
   margin: 0 0 8px;
 }
-.cart-empty__text {
+.cart-drawer__empty-text {
   color: var(--clr-muted);
   font-size: 15px;
   margin: 0 0 20px;
 }
-.cart-empty__link {
+.cart-drawer__empty-link {
   font-weight: 600;
   color: var(--clr-accent);
   font-size: 15px;
 }
-.cart-empty__link:hover { text-decoration: underline; }
+.cart-drawer__empty-link:hover { text-decoration: underline; }
 
 /* ---------- 5. Кнопки ---------- */
 .btn {
@@ -361,8 +403,8 @@ button:focus-visible {
 .btn:hover { transform: translateY(-2px); }
 .btn:active { transform: translateY(0); }
 
-.btn--primary { background: var(--clr-accent); color: #fff; }
-.btn--primary:hover { background: #1f3f36; }
+.btn--primary { background: var(--clr-accent); color: var(--clr-hero-text); }
+.btn--primary:hover { background: var(--clr-accent-strong); }
 
 .btn--small { padding: 10px 20px; font-size: 14px; }
 
@@ -395,26 +437,25 @@ button:focus-visible {
   min-height: 86vh;
   display: flex;
   align-items: center;
-  color: #fff;
+  color: var(--clr-hero-text);
   isolation: isolate;
   overflow: hidden;
 }
 
-/* Затемнение внизу hero — плавный переход к блоку истории */
 .hero::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 160px;                       /* высота зоны затемнения */
+  height: 160px;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, .7) 30%,
-    rgba(0, 0, 0, .9) 100%);
+    var(--clr-overlay-fade-zero) 0%,
+    var(--clr-overlay-fade-mid) 30%,
+    var(--clr-overlay-fade-strong) 100%);
   pointer-events: none;
-  z-index: 1;                          /* поверх картинки, но под контентом */
+  z-index: 1;
 }
 
 .hero__overlay {
@@ -423,9 +464,9 @@ button:focus-visible {
   z-index: -1;
   background:
     linear-gradient(120deg,
-      rgba(16, 26, 22, .86) 0%,
-      rgba(16, 26, 22, .55) 55%,
-      rgba(16, 26, 22, .35) 100%),
+      var(--clr-hero-overlay-1) 0%,
+      var(--clr-hero-overlay-2) 55%,
+      var(--clr-hero-overlay-3) 100%),
     url("../images/forest-slogan_back.jpg")
     center / cover no-repeat;
 }
@@ -460,20 +501,19 @@ button:focus-visible {
 .hero__slogan-break { display: inline; }
 .hero__lead {
   font-size: clamp(15px, 1.3vw, 18px);
-  color: rgba(255, 255, 255, .86);
+  color: var(--clr-hero-text-soft);
   max-width: 560px;
   margin: 0;
 }
 
 /* ---------- 8. Story ---------- */
 .story {
-  position: relative;                  /* нужно для ::before */
-  isolation: isolate;                  /* нужно, чтобы z-index не утёк */
+  position: relative;
+  isolation: isolate;
   padding-block: 96px;
   background: url("../images/landscape_back.png") center / cover no-repeat;
 }
 
-/* Затемнение вверху блока истории — принимает переход от hero */
 .story::before {
   content: "";
   position: absolute;
@@ -483,20 +523,18 @@ button:focus-visible {
   height: 120px;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, .9) 0%,
-    rgba(0, 0, 0, .7) 30%,
-    rgba(0, 0, 0, 0) 100%);
+    var(--clr-overlay-fade-strong) 0%,
+    var(--clr-overlay-fade-mid) 30%,
+    var(--clr-overlay-fade-zero) 100%);
   pointer-events: none;
-  z-index: -1;                         /* за контентом, но над фоном-картинкой */
+  z-index: -1;
 }
 
-/* Контент поверх затемнения */
 .story > .container {
   position: relative;
   z-index: 1;
 }
 
-/* Затемнение внизу блока истории — переход к тёмному блоку Explore */
 .story::after {
   content: "";
   position: absolute;
@@ -506,11 +544,11 @@ button:focus-visible {
   height: 140px;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, .7) 70%,
-    rgba(0, 0, 0, .9) 100%);
+    var(--clr-overlay-fade-zero) 0%,
+    var(--clr-overlay-fade-mid) 70%,
+    var(--clr-overlay-fade-strong) 100%);
   pointer-events: none;
-  z-index: 0;                         /* над фоном, но под контентом */
+  z-index: 0;
 }
 
 .story__media {
@@ -529,8 +567,8 @@ button:focus-visible {
   position: absolute;
   left: 18px;
   bottom: 18px;
-  background: rgba(243, 239, 231, .95);
-  color: #146b52;                 /* было var(--clr-light) */
+  background: var(--clr-story-badge-bg);
+  color: var(--clr-story-badge-text);
   font-size: 13px;
   font-weight: 600;
   padding: 8px 14px;
@@ -539,7 +577,7 @@ button:focus-visible {
 }
 
 .story__text {
-  color: #708479;                 /* было var(--clr-light-muted) */
+  color: var(--clr-story-text);
   font-size: 16px;
   margin: 0 0 16px;
 }
@@ -554,43 +592,42 @@ button:focus-visible {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: .14em;
-  color: #708479;                 /* было var(--clr-light-muted) */
+  color: var(--clr-story-text);
   margin: 0 0 4px;
 }
 .story__fact-value {
   font-family: 'Cormorant Garamond', serif;
   font-size: 34px;
   font-weight: 600;
-  color: #146b52;                 /* было var(--clr-light-accent) */
+  color: var(--clr-story-accent);
   margin: 0;
   line-height: 1;
 }
 
 /* Только внутри блока «История места» */
 .story .section-head__title {
-  color: #9caea4;                 /* заголовок */
+  color: var(--clr-story-title);
 }
 .story .section-head__eyebrow {
-  color: #146b52;                 /* акцент */
+  color: var(--clr-story-accent);
 }
 
 /* ---------- 9. Explore cards ---------- */
 .explore {
   padding-block: 96px;
   background:
-    linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .55)),
+    linear-gradient(var(--clr-overlay-fade-soft), var(--clr-overlay-fade-soft)),
     url("../images/variants_back.png") center / cover no-repeat;
 }
 
-/* Заголовки секции — светлые, т.к. фон тёмный */
 .explore .section-head__eyebrow {
   color: var(--clr-sand);
 }
 .explore .section-head__title {
-  color: #fff;
+  color: var(--clr-hero-text);
 }
 .explore .section-head__sub {
-  color: rgba(255, 255, 255, .75);
+  color: var(--clr-hero-text-soft);
 }
 
 .explore-card {
@@ -598,7 +635,7 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--clr-sand);            /* #c9b9a1 — не меняем */
+  background: var(--clr-sand);
   border-radius: var(--radius);
   border: 1px solid var(--clr-line);
   box-shadow: var(--shadow-sm);
@@ -619,7 +656,7 @@ button:focus-visible {
   position: absolute;
   left: 0; right: 0; bottom: 0;
   height: 4px;
-  background: #b8935a;                    /* золотой акцент снизу */
+  background: var(--clr-gold);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--transition);
@@ -627,10 +664,10 @@ button:focus-visible {
 .explore-card:hover,
 .explore-card:focus-visible {
   transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, .35);
+  box-shadow: 0 16px 40px var(--clr-gold-shadow);
   border-color: transparent;
   opacity: 1;
-  outline-color: #b8935a;                 /* золотая обводка на hover */
+  outline-color: var(--clr-gold-outline);
 }
 .explore-card:hover::after,
 .explore-card:focus-visible::after { transform: scaleX(1); }
@@ -643,10 +680,10 @@ button:focus-visible {
 .explore-card__title {
   font-size: 24px;
   margin-bottom: 10px;
-  color: #6b4e1c;                         /* тёмное золото — читается на песочном */
+  color: var(--clr-gold-text);
 }
 .explore-card__text {
-  color: #5a4a2e;                         /* тёплый тёмно-коричневый, ближе к золотой гамме */
+  color: var(--clr-gold-text-soft);
   font-size: 15px;
   margin: 0 0 22px;
   flex-grow: 1;
@@ -654,18 +691,18 @@ button:focus-visible {
 .explore-card__link {
   font-size: 14px;
   font-weight: 600;
-  color: #8a6a35;                         /* золото для ссылки */
+  color: var(--clr-gold-strong);
   letter-spacing: .02em;
   transition: color var(--transition);
 }
 .explore-card:hover .explore-card__link {
-  color: #b8935a;                         /* на hover — светлее */
+  color: var(--clr-gold);
 }
 
 /* ---------- 10. Footer ---------- */
 .site-footer {
-  background: #0a0f0d;                    /* было #101815 — ещё темнее */
-  color: rgba(255, 255, 255, .72);
+  background: var(--clr-footer-bg);
+  color: var(--clr-footer-text);
   padding-top: 64px;
 }
 .site-footer__grid { padding-bottom: 48px; }
@@ -673,7 +710,7 @@ button:focus-visible {
 .site-footer__desc {
   margin-top: 16px;
   font-size: 14px;
-  color: rgba(255, 255, 255, .55);
+  color: var(--clr-footer-text-soft);
   max-width: 280px;
 }
 .site-footer__title {
@@ -682,7 +719,7 @@ button:focus-visible {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: .14em;
-  color: #fff;
+  color: var(--clr-footer-title);
   margin-bottom: 18px;
 }
 .site-footer__list {
@@ -697,28 +734,27 @@ button:focus-visible {
 .site-footer__address {
   font-size: 14px;
   margin: 0 0 16px;
-  color: rgba(255, 255, 255, .72);
+  color: var(--clr-footer-text);
 }
 .site-footer__list--social { flex-direction: row; gap: 16px; }
 
 .site-footer__bottom {
-  border-top: 1px solid rgba(255, 255, 255, .08);   /* было .12 — глуше */
+  border-top: 1px solid var(--clr-footer-line);
   padding-block: 22px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 8px 24px;
   font-size: 13px;
-  color: rgba(255, 255, 255, .4);
+  color: var(--clr-footer-text-dim);
 }
 .site-footer__copy,
 .site-footer__legal { margin: 0; }
-.site-footer__bottom a:hover { color: #fff; }
+.site-footer__bottom a:hover { color: var(--clr-footer-title); }
 
 /* =========================================================
    11. Адаптив
    ========================================================= */
-/* v5: бургер с 1180px (пунктов стало больше + длинное «Велосипеды & сапы») */
 @media (max-width: 1180px) {
   .burger { display: flex; }
 
@@ -762,4 +798,1127 @@ button:focus-visible {
   .navbar-site__inner { gap: 12px; }
   .navbar-site__actions { gap: 12px; }
   .logo__text { font-size: 20px; }
+}
+
+/* =========================================================
+12. Catalog (страница жилья) - Horizontal Cards Layout
+========================================================= */
+
+/* --- 12.1 Токены каталога --- */
+:root {
+    --clr-catalog-bg: var(--clr-bg);
+    --clr-catalog-surface: var(--clr-surface);
+    --clr-catalog-line: var(--clr-line);
+    --clr-catalog-text: var(--clr-dark);
+    --clr-catalog-muted: var(--clr-muted);
+    --clr-catalog-accent: var(--clr-accent);
+    --clr-catalog-accent-strong: var(--clr-accent-strong);
+    --clr-card-hover-shadow: 0 18px 44px rgba(24, 33, 28, .16);
+    --clr-tag-room-bg: rgba(40, 79, 68, .12);
+    --clr-tag-room-text: var(--clr-accent);
+    --clr-tag-cottage-bg: rgba(201, 185, 161, .35);
+    --clr-tag-cottage-text: #6b4e1c;
+}
+
+/* --- 12.2 Секция каталога --- */
+.catalog {
+    padding-block: 72px 96px;
+    background: var(--clr-catalog-bg);
+}
+
+.catalog__head {
+    margin-bottom: 32px;
+}
+
+.catalog__grid {
+    align-items: flex-start;
+}
+
+/* --- 12.3 Sticky-фильтр (Sidebar) --- */
+.filter {
+    position: sticky;
+    top: calc(var(--navbar-h) + 16px);
+    background: var(--clr-catalog-surface);
+    border: 1px solid var(--clr-catalog-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+}
+
+.filter__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.filter__title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--clr-catalog-text);
+    margin: 0;
+}
+
+.filter__reset {
+    border: none;
+    background: transparent;
+    color: var(--clr-catalog-accent);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: color var(--transition), background var(--transition);
+}
+
+.filter__reset:hover {
+    color: var(--clr-catalog-accent-strong);
+    background: rgba(40, 79, 68, .07);
+}
+
+.filter__group {
+    border: none;
+    border-top: 1px solid var(--clr-catalog-line);
+    margin: 0;
+    padding: 18px 0 0;
+}
+
+.filter__group + .filter__group {
+    margin-top: 18px;
+}
+
+.filter__legend {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: var(--clr-catalog-muted);
+    padding: 0;
+    margin: 0 0 12px;
+    width: 100%;
+}
+
+.filter__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--clr-catalog-text);
+}
+
+.filter__input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--clr-catalog-accent);
+    cursor: pointer;
+}
+
+.filter__label {
+    user-select: none;
+}
+
+/* Chips for amenities */
+.filter__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter__chip {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+}
+
+.filter__chip input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.filter__chip span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--clr-catalog-line);
+    background: var(--clr-catalog-surface);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--clr-catalog-text);
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.filter__chip input:checked + span {
+    background: var(--clr-catalog-accent);
+    border-color: var(--clr-catalog-accent);
+    color: #ffffff;
+}
+
+.filter__chip input:focus-visible + span {
+    outline: 2px solid var(--clr-catalog-accent);
+    outline-offset: 2px;
+}
+
+/* Price Range */
+.filter__price-output {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--clr-catalog-accent);
+    text-transform: none;
+}
+
+.filter__range {
+    position: relative;
+    height: 28px;
+    margin-bottom: 12px;
+}
+
+.filter__range-input {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    pointer-events: none;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 28px;
+}
+
+.filter__range-input::-webkit-slider-runnable-track {
+    height: 4px;
+    background: var(--clr-catalog-line);
+    border-radius: 2px;
+}
+
+.filter__range-input::-moz-range-track {
+    height: 4px;
+    background: var(--clr-catalog-line);
+    border-radius: 2px;
+}
+
+.filter__range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: auto;
+    width: 18px;
+    height: 18px;
+    margin-top: -7px;
+    border-radius: 50%;
+    background: var(--clr-catalog-accent);
+    border: 2px solid var(--clr-catalog-surface);
+    box-shadow: 0 1px 4px rgba(24, 33, 28, .3);
+    cursor: pointer;
+}
+
+.filter__range-input::-moz-range-thumb {
+    pointer-events: auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--clr-catalog-accent);
+    border: 2px solid var(--clr-catalog-surface);
+    box-shadow: 0 1px 4px rgba(24, 33, 28, .3);
+    cursor: pointer;
+}
+
+.filter__price-row {
+    display: flex;
+    gap: 10px;
+}
+
+.filter__price-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--clr-catalog-muted);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+}
+
+.filter__price-number {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--clr-catalog-line);
+    border-radius: var(--radius-sm);
+    background: var(--clr-catalog-bg);
+    color: var(--clr-catalog-text);
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.filter__price-number:focus-visible {
+    outline: 2px solid var(--clr-catalog-accent);
+    outline-offset: 1px;
+}
+
+/* --- 12.4 Список карточек (Horizontal Layout) --- */
+.catalog__list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stay-card {
+    background: var(--clr-catalog-surface);
+    border: 1px solid var(--clr-catalog-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.stay-card:hover {
+    box-shadow: var(--clr-card-hover-shadow);
+    border-color: transparent;
+    transform: translateY(-2px);
+}
+
+/* Internal Row Structure */
+.stay-card__row {
+    align-items: stretch; /* Ensures equal height columns */
+}
+
+.stay-card__media {
+    position: relative;
+    height: 100%;
+    min-height: 240px; /* Fallback for mobile/tablet stacking */
+}
+
+.stay-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.stay-card__tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: 6px 12px;
+    border-radius: 999px;
+    backdrop-filter: blur(4px);
+    z-index: 2;
+}
+
+.stay-card__tag--room {
+    background: var(--clr-tag-room-bg);
+    color: var(--clr-tag-room-text);
+    background-color: rgba(243, 239, 231, .92); /* Light bg for contrast on image */
+}
+
+.stay-card__tag--cottage {
+    background: var(--clr-tag-cottage-bg);
+    color: var(--clr-tag-cottage-text);
+    background-color: rgba(243, 239, 231, .92);
+}
+
+.stay-card__body {
+    padding: 24px 24px 22px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.stay-card__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.stay-card__title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--clr-catalog-text);
+    line-height: 1.2;
+}
+
+.stay-card__price {
+    margin: 0;
+    font-size: 13px;
+    color: var(--clr-catalog-muted);
+    white-space: nowrap;
+    line-height: 1.4;
+    text-align: right;
+}
+
+.stay-card__price strong {
+    display: block;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--clr-catalog-accent);
+}
+
+.stay-card__price small {
+  display: block;
+  font-size: 12px;
+  color: var(--clr-catalog-muted);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.stay-card__details {
+  margin: 0 0 14px;
+  border-top: 1px dashed var(--clr-catalog-line);
+  padding-top: 12px;
+}
+.stay-card__details summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--clr-catalog-accent);
+  list-style: none;
+}
+.stay-card__details summary::-webkit-details-marker { display: none; }
+.stay-card__details summary::before {
+  content: '▸ ';
+  transition: transform var(--transition);
+  display: inline-block;
+}
+.stay-card__details[open] summary::before { transform: rotate(90deg); }
+
+.stay-card__rooms {
+  margin: 10px 0 8px;
+  padding-left: 18px;
+  list-style: disc;
+  font-size: 14px;
+  color: var(--clr-catalog-text);
+}
+.stay-card__features {
+  margin: 6px 0;
+  font-size: 13.5px;
+  color: var(--clr-catalog-muted);
+}
+.stay-card__features strong { color: var(--clr-catalog-text); }
+
+.stay-card__text {
+    margin: 0 0 16px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--clr-catalog-muted);
+    flex-grow: 1; /* Pushes meta/actions to bottom */
+}
+
+.stay-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+}
+
+.stay-card__meta-item {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--clr-catalog-text);
+    letter-spacing: .01em;
+}
+
+.stay-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.stay-card__fav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--clr-catalog-line);
+    border-radius: 50%;
+    background: var(--clr-catalog-surface);
+    color: var(--clr-catalog-muted);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color var(--transition), border-color var(--transition), background var(--transition), transform var(--transition);
+}
+
+.stay-card__fav:hover {
+    color: var(--clr-catalog-accent);
+    border-color: var(--clr-catalog-accent);
+    transform: scale(1.06);
+}
+
+.stay-card__fav:focus-visible {
+    outline: 2px solid var(--clr-catalog-accent);
+    outline-offset: 2px;
+}
+
+.stay-card__fav.is-active {
+    color: var(--clr-catalog-accent-strong);
+    border-color: var(--clr-catalog-accent-strong);
+    background: rgba(40, 79, 68, .08);
+}
+
+/* --- 12.4.1 Три цены и раскрывающийся состав --- */
+.stay-card__details {
+  margin: 0 0 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--clr-catalog-line);
+}
+
+.stay-card__details summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--clr-catalog-accent);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+.stay-card__details summary::-webkit-details-marker { display: none; }
+.stay-card__details summary::before {
+  content: '▸';
+  display: inline-block;
+  transition: transform var(--transition);
+  font-size: 12px;
+}
+.stay-card__details[open] summary::before { transform: rotate(90deg); }
+
+.stay-card__rooms {
+  margin: 12px 0 10px;
+  padding-left: 20px;
+  list-style: disc;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--clr-catalog-text);
+}
+
+.stay-card__features {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--clr-catalog-muted);
+}
+.stay-card__features strong {
+  color: var(--clr-catalog-text);
+  font-weight: 600;
+}
+
+/* На мобильных три цены переносим строкой */
+@media (max-width: 767.98px) {
+  .stay-card__details {
+    margin-bottom: 14px;
+  }
+}
+
+/* --- 12.5 Empty State --- */
+.catalog__empty {
+    margin-top: 32px;
+    padding: 32px 24px;
+    text-align: center;
+    font-size: 15px;
+    color: var(--clr-catalog-muted);
+    background: var(--clr-catalog-surface);
+    border: 1px dashed var(--clr-catalog-line);
+    border-radius: var(--radius);
+}
+
+.catalog__empty-reset {
+    margin-left: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--clr-catalog-accent);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition: color var(--transition);
+}
+
+.catalog__empty-reset:hover {
+    color: var(--clr-catalog-accent-strong);
+}
+
+/* --- 12.6 Filtering States --- */
+.filter__chip input:disabled + span,
+.filter__option:has(.filter__input:disabled) {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.catalog__list.is-filtering .stay-card.is-hidden,
+.stay-card[hidden] {
+    display: none;
+}
+
+/* --- 12.7 Responsive Adjustments --- */
+
+/* Tablet: Stack card vertically if needed, but keep horizontal on large tablets if possible. 
+   Here we force vertical stack below lg breakpoint for better readability of long descriptions */
+@media (max-width: 991.98px) {
+    .filter {
+        position: static;
+        margin-bottom: 24px;
+    }
+    
+    /* On tablet/mobile, the grid inside stay-card might need adjustment if cols don't behave perfectly */
+    .stay-card__media {
+        min-height: 200px;
+    }
+}
+
+/* Mobile: Full vertical stack */
+@media (max-width: 767.98px) {
+    .catalog {
+        padding-block: 48px 64px;
+    }
+    
+    .catalog__head {
+        margin-bottom: 24px;
+    }
+    
+    .filter {
+        padding: 18px;
+    }
+    
+    .filter__title {
+        font-size: 22px;
+    }
+    
+    /* Ensure card body doesn't get squeezed */
+    .stay-card__body {
+        padding: 20px 18px 18px;
+    }
+    
+    .stay-card__title {
+        font-size: 22px;
+    }
+    
+    .stay-card__top {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .stay-card__price {
+        text-align: left;
+    }
+    
+    .stay-card__price strong {
+        display: inline;
+        font-size: 18px;
+    }
+    
+    .stay-card__media,
+    .stay-card__image {
+        min-height: 200px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .filter__price-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .stay-card__meta {
+        gap: 6px 14px;
+    }
+    
+    .stay-card__actions {
+        flex-wrap: wrap;
+    }
+    
+    .stay-card__actions .btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}
+
+/* --- 12.8 Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+    .stay-card,
+    .stay-card__fav,
+    .filter__reset,
+    .catalog__empty-reset {
+        transition: none;
+    }
+    .stay-card:hover {
+        transform: none;
+    }
+}
+
+/* =========================================================
+13. Каталог — сетки и карточки СПА / ВЕЛО
+========================================================= */
+
+/* --- 13.1 Сетка для spa (2 колонки на десктопе) --- */
+.catalog__list--spa {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 991.98px) {
+  .catalog__list--spa { grid-template-columns: 1fr; }
+}
+
+/* --- 13.2 Сетка для bike (1 колонка, карточка-строка) --- */
+.catalog__list--bike {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* --- 13.3 spa-card --- */
+.spa-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--clr-catalog-surface);
+  border: 1px solid var(--clr-catalog-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+.spa-card:hover {
+  box-shadow: var(--clr-card-hover-shadow);
+  border-color: transparent;
+  transform: translateY(-2px);
+}
+
+.spa-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+.spa-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition);
+}
+.spa-card:hover .spa-card__image { transform: scale(1.04); }
+
+.spa-card__tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(243, 239, 231, .92);
+  color: var(--clr-catalog-accent);
+  backdrop-filter: blur(4px);
+}
+
+.spa-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 22px 22px;
+  flex: 1;
+}
+
+.spa-card__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--clr-catalog-text);
+  line-height: 1.2;
+}
+
+.spa-card__text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--clr-catalog-muted);
+  flex: 1;
+}
+
+.spa-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  color: var(--clr-catalog-text);
+}
+
+.spa-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--clr-catalog-line);
+  margin-top: 4px;
+}
+
+.spa-card__price {
+  font-size: 13px;
+  color: var(--clr-catalog-muted);
+  white-space: nowrap;
+}
+.spa-card__price strong {
+  font-size: 20px;
+  color: var(--clr-catalog-accent);
+  font-weight: 600;
+}
+
+/* --- 13.4 bike-card (горизонтальная компактная) --- */
+.bike-card {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  background: var(--clr-catalog-surface);
+  border: 1px solid var(--clr-catalog-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+.bike-card:hover {
+  box-shadow: var(--clr-card-hover-shadow);
+  border-color: transparent;
+  transform: translateY(-2px);
+}
+
+.bike-card__media {
+  position: relative;
+  overflow: hidden;
+}
+.bike-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bike-card__tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(243, 239, 231, .92);
+  color: var(--clr-catalog-accent);
+}
+
+.bike-card__body {
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bike-card__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.bike-card__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--clr-catalog-text);
+}
+.bike-card__price {
+  font-size: 13px;
+  color: var(--clr-catalog-muted);
+  white-space: nowrap;
+}
+.bike-card__price strong {
+  font-size: 18px;
+  color: var(--clr-catalog-accent);
+  font-weight: 600;
+}
+
+.bike-card__text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--clr-catalog-muted);
+  flex: 1;
+}
+
+.bike-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  color: var(--clr-catalog-text);
+}
+
+.bike-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* --- 13.5 Адаптив карточек проката --- */
+@media (max-width: 767.98px) {
+  .bike-card {
+    grid-template-columns: 1fr;
+  }
+  .bike-card__media {
+    aspect-ratio: 16 / 9;
+  }
+  .bike-card__top {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .catalog__list--spa { gap: 16px; }
+  .spa-card__body { padding: 18px; }
+  .spa-card__title { font-size: 22px; }
+  .spa-card__foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .spa-card__foot .btn { width: 100%; }
+
+  .bike-card__body { padding: 16px 18px; }
+  .bike-card__title { font-size: 20px; }
+}
+
+/* --- 13.6 Убираем фиксированную высоту media у stay-card при grid-раскладке --- */
+.catalog__list--stay .stay-card__row { min-height: 240px; }
+
+/* =========================================================
+14. Переключатель «описание ↔ календарь» и мини-календарь
+========================================================= */
+
+/* --- 14.1 Кнопка-стрелка в цене --- */
+.stay-card__toggle,
+.spa-card__toggle,
+.bike-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-left: 8px;
+  padding: 0;
+  border: 1px solid var(--clr-catalog-line);
+  border-radius: 50%;
+  background: var(--clr-catalog-surface);
+  color: var(--clr-catalog-accent);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
+}
+.stay-card__toggle:hover,
+.spa-card__toggle:hover,
+.bike-card__toggle:hover {
+  background: var(--clr-catalog-accent);
+  border-color: var(--clr-catalog-accent);
+  color: #fff;
+  transform: scale(1.05);
+}
+.stay-card__toggle:focus-visible,
+.spa-card__toggle:focus-visible,
+.bike-card__toggle:focus-visible {
+  outline: 2px solid var(--clr-catalog-accent);
+  outline-offset: 2px;
+}
+
+/* --- 14.2 Панели (info / calendar) --- */
+.stay-card__panel,
+.spa-card__panel,
+.bike-card__panel {
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+  height: 100%;
+}
+.stay-card__panel[hidden],
+.spa-card__panel[hidden],
+.bike-card__panel[hidden] {
+  display: none;
+}
+
+/* --- 14.3 Цена в режиме календаря — меняем вид --- */
+.stay-card.is-calendar .stay-card__price,
+.spa-card.is-calendar .spa-card__price,
+.bike-card.is-calendar .bike-card__price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--clr-catalog-accent);
+  color: #fff;
+  border-radius: 999px;
+}
+.stay-card.is-calendar .stay-card__price strong,
+.spa-card.is-calendar .spa-card__price strong,
+.bike-card.is-calendar .bike-card__price strong {
+  color: #fff;
+}
+.stay-card.is-calendar .stay-card__price {
+  /* цена переезжает вправо в шапке — уже flex, но можно выровнять */
+  margin-left: auto;
+}
+
+/* --- 14.4 Мини-календарь --- */
+.stay-card__calendar {
+  margin-top: 12px;
+}
+
+.stay-card__free {
+  margin: 12px 0;
+  padding: 14px 16px;
+  background: rgba(40, 79, 68, .06);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--clr-catalog-accent);
+  text-align: center;
+}
+
+.cal {
+  border: 1px solid var(--clr-catalog-line);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: var(--clr-catalog-bg);
+}
+
+.cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.cal__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--clr-catalog-text);
+  text-transform: capitalize;
+}
+.cal__nav {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--clr-catalog-line);
+  border-radius: 50%;
+  background: var(--clr-catalog-surface);
+  color: var(--clr-catalog-text);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.cal__nav:hover {
+  background: var(--clr-catalog-accent);
+  border-color: var(--clr-catalog-accent);
+  color: #fff;
+}
+
+.cal__weekdays,
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.cal__weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--clr-catalog-muted);
+  text-transform: uppercase;
+  padding: 4px 0;
+}
+
+.cal__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-size: 13px;
+  border-radius: 6px;
+  color: var(--clr-catalog-text);
+  transition: background var(--transition), color var(--transition);
+}
+.cal__cell--empty { background: transparent; }
+.cal__cell--free  { background: rgba(40, 79, 68, .06); }
+.cal__cell--free:hover { background: rgba(40, 79, 68, .16); cursor: pointer; }
+.cal__cell--past  { color: var(--clr-catalog-line); }
+.cal__cell--today { outline: 2px solid var(--clr-catalog-accent); outline-offset: -2px; }
+.cal__cell--booked {
+  background: rgba(180, 60, 60, .12);
+  color: #b43c3c;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.cal__legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--clr-catalog-muted);
+}
+.cal__legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.cal__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.cal__dot--free   { background: rgba(40, 79, 68, .25); }
+.cal__dot--booked { background: rgba(180, 60, 60, .4); }
+
+/* --- 14.5 Адаптив --- */
+@media (max-width: 575.98px) {
+  .stay-card__toggle,
+  .spa-card__toggle,
+  .bike-card__toggle {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+  .cal__cell { font-size: 12px; }
+  .cal { padding: 10px; }
 }

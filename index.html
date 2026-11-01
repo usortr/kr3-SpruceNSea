@@ -70,20 +70,20 @@
           </nav>
 
           <button
-            class="cart"
+            class="cart-toggle"
             type="button"
             aria-label="Открыть корзину заказа"
             aria-expanded="false"
             aria-controls="cart-drawer"
             data-cart-toggle>
-            <svg class="cart__icon" width="22" height="22" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.8"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="9" cy="20" r="1.4"/>
-              <circle cx="18" cy="20" r="1.4"/>
-              <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6"/>
+            <svg class="cart-toggle__icon" width="22" height="22" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="9" cy="20" r="1.4"/>
+                <circle cx="18" cy="20" r="1.4"/>
+                <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6"/>
             </svg>
-            <span class="cart__badge" data-cart-count hidden>0</span>
+            <span class="cart-toggle__badge" data-cart-count hidden>0</span>
           </button>
 
         </div>
@@ -104,13 +104,13 @@
       </header>
 
       <div class="cart-drawer__body">
-        <div class="cart-empty">
-          <span class="cart-empty__icon" aria-hidden="true">🛒</span>
-          <p class="cart-empty__title">Заказ пока пуст</p>
-          <p class="cart-empty__text">
+        <div class="cart-drawer__empty">
+          <span class="cart-drawer__empty__icon" aria-hidden="true">🛒</span>
+          <p class="cart-drawer__empty__title">Заказ пока пуст</p>
+          <p class="cart-drawer__empty__text">
             Начните с выбора жилья — потом добавите СПА, велосипеды или ужин.
           </p>
-          <a href="catalog.html?type=stays" class="cart-empty__link">
+          <a href="catalog.html?type=stays" class="cart-drawer__empty__link">
             Перейти к жилью →
           </a>
         </div>
@@ -301,7 +301,6 @@
             <li><a href="catalog.html?type=spa">СПА &amp; баня</a></li>
             <li><a href="catalog.html?type=bikes">Велосипеды &amp; сапы</a></li>
             <li><a href="catalog.html?type=restaurant">Ресторан</a></li>
-            <li><a href="catalog.html?type=tours">Экскурсии</a></li>
             <li><a href="contacts.html">Контакты</a></li>
           </ul>
         </div>

@@ -2,6 +2,45 @@
    Spruce & Sea — скрипты
    ========================================================= */
 
+/* ---------- 0. Активный пункт меню по URL ---------- */
+(function () {
+  const links = document.querySelectorAll('.site-nav__link');
+  if (!links.length) return;
+
+  const url   = new URL(location.href);
+  const type  = url.searchParams.get('type');   // stays | spa | bikes | restaurant
+  const page  = url.pathname.split('/').pop() || 'index.html';
+
+  // Карта: какой ссылке соответствует какой контекст
+  const map = {
+    stays:      'catalog.html?type=stays',
+    spa:        'catalog.html?type=spa',
+    bikes:      'catalog.html?type=bikes',
+    restaurant: 'restaurant.html',
+    contacts:   'contacts.html',
+    index:      'index.html',
+  };
+
+  let target = null;
+
+  if (page === 'catalog.html') {
+    target = map[type] || map.stays;
+  } else if (page === 'restaurant.html') {
+    target = map.restaurant;
+  } else if (page === 'contacts.html') {
+    target = map.contacts;
+  } else {
+    target = map.index;
+  }
+
+  links.forEach(link => {
+    link.classList.toggle(
+      'site-nav__link--active',
+      link.getAttribute('href') === target
+    );
+  });
+})();
+
 /* ---------- 1. Мобильное меню навбара ---------- */
 (function () {
   const burger = document.querySelector('.burger');
