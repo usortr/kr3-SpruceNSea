@@ -68,6 +68,30 @@
   --transition-underline: .3s cubic-bezier(.4, 0, .2, 1);
 
   --navbar-h: 72px;
+
+  /* --- 1.8 Токены каталога --- */
+  --clr-catalog-bg: var(--clr-bg);
+  --clr-catalog-surface: var(--clr-surface);
+  --clr-catalog-line: var(--clr-line);
+  --clr-catalog-text: var(--clr-dark);
+  --clr-catalog-muted: var(--clr-muted);
+  --clr-catalog-accent: var(--clr-accent);
+  --clr-catalog-accent-strong: var(--clr-accent-strong);
+  --clr-card-hover-shadow: 0 18px 44px rgba(24, 33, 28, .16);
+  --clr-tag-room-bg: rgba(40, 79, 68, .12);
+  --clr-tag-room-text: var(--clr-accent);
+  --clr-tag-cottage-bg: rgba(201, 185, 161, .35);
+  --clr-tag-cottage-text: #6b4e1c;
+
+    /* --- 1.9 Высоты карточек (единые для info и calendar) --- */
+  --card-stay-h: clamp(300px, 24vw, 360px);
+  --card-spa-h:  clamp(420px, 32vw, 480px);
+  --card-bike-h: clamp(180px, 15vw, 210px);
+
+  /* На узком экране — вертикальная раскладка, высота фиксирована в px */
+  --card-stay-h-mobile: 460px;
+  --card-spa-h-mobile:  520px;
+  --card-bike-h-mobile: 300px;
 }
 
 /* ---------- 2. База ---------- */
@@ -604,13 +628,8 @@ button:focus-visible {
   line-height: 1;
 }
 
-/* Только внутри блока «История места» */
-.story .section-head__title {
-  color: var(--clr-story-title);
-}
-.story .section-head__eyebrow {
-  color: var(--clr-story-accent);
-}
+.story .section-head__title { color: var(--clr-story-title); }
+.story .section-head__eyebrow { color: var(--clr-story-accent); }
 
 /* ---------- 9. Explore cards ---------- */
 .explore {
@@ -620,15 +639,9 @@ button:focus-visible {
     url("../images/variants_back.png") center / cover no-repeat;
 }
 
-.explore .section-head__eyebrow {
-  color: var(--clr-sand);
-}
-.explore .section-head__title {
-  color: var(--clr-hero-text);
-}
-.explore .section-head__sub {
-  color: var(--clr-hero-text-soft);
-}
+.explore .section-head__eyebrow { color: var(--clr-sand); }
+.explore .section-head__title { color: var(--clr-hero-text); }
+.explore .section-head__sub { color: var(--clr-hero-text-soft); }
 
 .explore-card {
   position: relative;
@@ -695,9 +708,7 @@ button:focus-visible {
   letter-spacing: .02em;
   transition: color var(--transition);
 }
-.explore-card:hover .explore-card__link {
-  color: var(--clr-gold);
-}
+.explore-card:hover .explore-card__link { color: var(--clr-gold); }
 
 /* ---------- 10. Footer ---------- */
 .site-footer {
@@ -753,7 +764,7 @@ button:focus-visible {
 .site-footer__bottom a:hover { color: var(--clr-footer-title); }
 
 /* =========================================================
-   11. Адаптив
+   11. Адаптив (шапка, hero, story, explore)
    ========================================================= */
 @media (max-width: 1180px) {
   .burger { display: flex; }
@@ -783,7 +794,7 @@ button:focus-visible {
 @media (max-width: 575px) {
   .hero { min-height: 78vh; }
   .hero__slogan-break { display: none; }
-  .story, .trail-section, .explore { padding-block: 64px; }
+  .story, .explore { padding-block: 64px; }
 
   .story__facts { gap: 20px 32px; }
   .story__fact-value { font-size: 28px; }
@@ -801,733 +812,277 @@ button:focus-visible {
 }
 
 /* =========================================================
-12. Catalog (страница жилья) - Horizontal Cards Layout
-========================================================= */
+   12. Каталог — общее, фильтр, карточка жилья
+   ========================================================= */
 
-/* --- 12.1 Токены каталога --- */
-:root {
-    --clr-catalog-bg: var(--clr-bg);
-    --clr-catalog-surface: var(--clr-surface);
-    --clr-catalog-line: var(--clr-line);
-    --clr-catalog-text: var(--clr-dark);
-    --clr-catalog-muted: var(--clr-muted);
-    --clr-catalog-accent: var(--clr-accent);
-    --clr-catalog-accent-strong: var(--clr-accent-strong);
-    --clr-card-hover-shadow: 0 18px 44px rgba(24, 33, 28, .16);
-    --clr-tag-room-bg: rgba(40, 79, 68, .12);
-    --clr-tag-room-text: var(--clr-accent);
-    --clr-tag-cottage-bg: rgba(201, 185, 161, .35);
-    --clr-tag-cottage-text: #6b4e1c;
-}
-
-/* --- 12.2 Секция каталога --- */
+/* --- 12.1 Секция каталога --- */
 .catalog {
-    padding-block: 72px 96px;
-    background: var(--clr-catalog-bg);
+  padding-block: 30px 96px;
+  background: var(--clr-catalog-bg);
 }
 
-.catalog__head {
-    margin-bottom: 32px;
-}
+.catalog__head { margin-bottom: 32px; }
 
-.catalog__grid {
-    align-items: flex-start;
-}
-
-/* --- 12.3 Sticky-фильтр (Sidebar) --- */
+/* --- 12.2 Sticky-фильтр (Sidebar) --- */
 .filter {
-    position: sticky;
-    top: calc(var(--navbar-h) + 16px);
-    background: var(--clr-catalog-surface);
-    border: 1px solid var(--clr-catalog-line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    padding: 24px;
+  position: sticky;
+  top: calc(var(--navbar-h) + 16px);
+  background: var(--clr-catalog-surface);
+  border: 1px solid var(--clr-catalog-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
 }
 
 .filter__head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .filter__title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--clr-catalog-text);
-    margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--clr-catalog-text);
+  margin: 0;
 }
 
 .filter__reset {
-    border: none;
-    background: transparent;
-    color: var(--clr-catalog-accent);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 4px 6px;
-    border-radius: 6px;
-    transition: color var(--transition), background var(--transition);
+  border: none;
+  background: transparent;
+  color: var(--clr-catalog-accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color var(--transition), background var(--transition);
 }
-
 .filter__reset:hover {
-    color: var(--clr-catalog-accent-strong);
-    background: rgba(40, 79, 68, .07);
+  color: var(--clr-catalog-accent-strong);
+  background: rgba(40, 79, 68, .07);
 }
 
 .filter__group {
-    border: none;
-    border-top: 1px solid var(--clr-catalog-line);
-    margin: 0;
-    padding: 18px 0 0;
+  border: none;
+  border-top: 1px solid var(--clr-catalog-line);
+  margin: 0;
+  padding: 18px 0 0;
 }
-
-.filter__group + .filter__group {
-    margin-top: 18px;
-}
+.filter__group + .filter__group { margin-top: 18px; }
 
 .filter__legend {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .14em;
-    color: var(--clr-catalog-muted);
-    padding: 0;
-    margin: 0 0 12px;
-    width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--clr-catalog-muted);
+  padding: 0;
+  margin: 0 0 12px;
+  width: 100%;
 }
 
 .filter__option {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    cursor: pointer;
-    font-size: 15px;
-    color: var(--clr-catalog-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--clr-catalog-text);
 }
 
 .filter__input {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--clr-catalog-accent);
-    cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--clr-catalog-accent);
+  cursor: pointer;
 }
 
-.filter__label {
-    user-select: none;
-}
+.filter__label { user-select: none; }
 
 /* Chips for amenities */
 .filter__chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-
 .filter__chip {
-    position: relative;
-    display: inline-flex;
-    cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
 }
-
 .filter__chip input {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    margin: 0;
-    cursor: pointer;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
 }
-
 .filter__chip span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 42px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 1px solid var(--clr-catalog-line);
-    background: var(--clr-catalog-surface);
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--clr-catalog-text);
-    transition: background var(--transition), color var(--transition), border-color var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--clr-catalog-line);
+  background: var(--clr-catalog-surface);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--clr-catalog-text);
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
 }
-
 .filter__chip input:checked + span {
-    background: var(--clr-catalog-accent);
-    border-color: var(--clr-catalog-accent);
-    color: #ffffff;
+  background: var(--clr-catalog-accent);
+  border-color: var(--clr-catalog-accent);
+  color: #ffffff;
 }
-
 .filter__chip input:focus-visible + span {
-    outline: 2px solid var(--clr-catalog-accent);
-    outline-offset: 2px;
+  outline: 2px solid var(--clr-catalog-accent);
+  outline-offset: 2px;
 }
 
 /* Price Range */
 .filter__price-output {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .04em;
-    color: var(--clr-catalog-accent);
-    text-transform: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--clr-catalog-accent);
+  text-transform: none;
 }
-
 .filter__range {
-    position: relative;
-    height: 28px;
-    margin-bottom: 12px;
+  position: relative;
+  height: 28px;
+  margin-bottom: 12px;
 }
-
 .filter__range-input {
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 100%;
-    margin: 0;
-    pointer-events: none;
-    background: transparent;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 28px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  margin: 0;
+  pointer-events: none;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
 }
-
 .filter__range-input::-webkit-slider-runnable-track {
-    height: 4px;
-    background: var(--clr-catalog-line);
-    border-radius: 2px;
+  height: 4px;
+  background: var(--clr-catalog-line);
+  border-radius: 2px;
 }
-
 .filter__range-input::-moz-range-track {
-    height: 4px;
-    background: var(--clr-catalog-line);
-    border-radius: 2px;
+  height: 4px;
+  background: var(--clr-catalog-line);
+  border-radius: 2px;
 }
-
 .filter__range-input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    pointer-events: auto;
-    width: 18px;
-    height: 18px;
-    margin-top: -7px;
-    border-radius: 50%;
-    background: var(--clr-catalog-accent);
-    border: 2px solid var(--clr-catalog-surface);
-    box-shadow: 0 1px 4px rgba(24, 33, 28, .3);
-    cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--clr-catalog-accent);
+  border: 2px solid var(--clr-catalog-surface);
+  box-shadow: 0 1px 4px rgba(24, 33, 28, .3);
+  cursor: pointer;
 }
-
 .filter__range-input::-moz-range-thumb {
-    pointer-events: auto;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--clr-catalog-accent);
-    border: 2px solid var(--clr-catalog-surface);
-    box-shadow: 0 1px 4px rgba(24, 33, 28, .3);
-    cursor: pointer;
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--clr-catalog-accent);
+  border: 2px solid var(--clr-catalog-surface);
+  box-shadow: 0 1px 4px rgba(24, 33, 28, .3);
+  cursor: pointer;
 }
-
 .filter__price-row {
-    display: flex;
-    gap: 10px;
-}
-
-.filter__price-field {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 12px;
-    color: var(--clr-catalog-muted);
-    text-transform: uppercase;
-    letter-spacing: .1em;
-}
-
-.filter__price-number {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid var(--clr-catalog-line);
-    border-radius: var(--radius-sm);
-    background: var(--clr-catalog-bg);
-    color: var(--clr-catalog-text);
-    font-family: inherit;
-    font-size: 14px;
-    letter-spacing: 0;
-    text-transform: none;
-}
-
-.filter__price-number:focus-visible {
-    outline: 2px solid var(--clr-catalog-accent);
-    outline-offset: 1px;
-}
-
-/* --- 12.4 Список карточек (Horizontal Layout) --- */
-.catalog__list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.stay-card {
-    background: var(--clr-catalog-surface);
-    border: 1px solid var(--clr-catalog-line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
-}
-
-.stay-card:hover {
-    box-shadow: var(--clr-card-hover-shadow);
-    border-color: transparent;
-    transform: translateY(-2px);
-}
-
-/* Internal Row Structure */
-.stay-card__row {
-    align-items: stretch; /* Ensures equal height columns */
-}
-
-.stay-card__media {
-    position: relative;
-    height: 100%;
-    min-height: 240px; /* Fallback for mobile/tablet stacking */
-}
-
-.stay-card__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.stay-card__tag {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .04em;
-    padding: 6px 12px;
-    border-radius: 999px;
-    backdrop-filter: blur(4px);
-    z-index: 2;
-}
-
-.stay-card__tag--room {
-    background: var(--clr-tag-room-bg);
-    color: var(--clr-tag-room-text);
-    background-color: rgba(243, 239, 231, .92); /* Light bg for contrast on image */
-}
-
-.stay-card__tag--cottage {
-    background: var(--clr-tag-cottage-bg);
-    color: var(--clr-tag-cottage-text);
-    background-color: rgba(243, 239, 231, .92);
-}
-
-.stay-card__body {
-    padding: 24px 24px 22px;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.stay-card__top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 8px;
-}
-
-.stay-card__title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px;
-    font-weight: 600;
-    margin: 0;
-    color: var(--clr-catalog-text);
-    line-height: 1.2;
-}
-
-.stay-card__price {
-    margin: 0;
-    font-size: 13px;
-    color: var(--clr-catalog-muted);
-    white-space: nowrap;
-    line-height: 1.4;
-    text-align: right;
-}
-
-.stay-card__price strong {
-    display: block;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--clr-catalog-accent);
-}
-
-.stay-card__price small {
-  display: block;
-  font-size: 12px;
-  color: var(--clr-catalog-muted);
-  margin-top: 4px;
-  font-weight: 500;
-}
-
-.stay-card__details {
-  margin: 0 0 14px;
-  border-top: 1px dashed var(--clr-catalog-line);
-  padding-top: 12px;
-}
-.stay-card__details summary {
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--clr-catalog-accent);
-  list-style: none;
-}
-.stay-card__details summary::-webkit-details-marker { display: none; }
-.stay-card__details summary::before {
-  content: '▸ ';
-  transition: transform var(--transition);
-  display: inline-block;
-}
-.stay-card__details[open] summary::before { transform: rotate(90deg); }
-
-.stay-card__rooms {
-  margin: 10px 0 8px;
-  padding-left: 18px;
-  list-style: disc;
-  font-size: 14px;
-  color: var(--clr-catalog-text);
-}
-.stay-card__features {
-  margin: 6px 0;
-  font-size: 13.5px;
-  color: var(--clr-catalog-muted);
-}
-.stay-card__features strong { color: var(--clr-catalog-text); }
-
-.stay-card__text {
-    margin: 0 0 16px;
-    font-size: 15px;
-    line-height: 1.65;
-    color: var(--clr-catalog-muted);
-    flex-grow: 1; /* Pushes meta/actions to bottom */
-}
-
-.stay-card__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 18px;
-    list-style: none;
-    margin: 0 0 20px;
-    padding: 0;
-}
-
-.stay-card__meta-item {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--clr-catalog-text);
-    letter-spacing: .01em;
-}
-
-.stay-card__actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: auto;
-}
-
-.stay-card__fav {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: 1px solid var(--clr-catalog-line);
-    border-radius: 50%;
-    background: var(--clr-catalog-surface);
-    color: var(--clr-catalog-muted);
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    transition: color var(--transition), border-color var(--transition), background var(--transition), transform var(--transition);
-}
-
-.stay-card__fav:hover {
-    color: var(--clr-catalog-accent);
-    border-color: var(--clr-catalog-accent);
-    transform: scale(1.06);
-}
-
-.stay-card__fav:focus-visible {
-    outline: 2px solid var(--clr-catalog-accent);
-    outline-offset: 2px;
-}
-
-.stay-card__fav.is-active {
-    color: var(--clr-catalog-accent-strong);
-    border-color: var(--clr-catalog-accent-strong);
-    background: rgba(40, 79, 68, .08);
-}
-
-/* --- 12.4.1 Три цены и раскрывающийся состав --- */
-.stay-card__details {
-  margin: 0 0 16px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--clr-catalog-line);
-}
-
-.stay-card__details summary {
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--clr-catalog-accent);
-  list-style: none;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  user-select: none;
+  gap: 10px;
 }
-.stay-card__details summary::-webkit-details-marker { display: none; }
-.stay-card__details summary::before {
-  content: '▸';
-  display: inline-block;
-  transition: transform var(--transition);
-  font-size: 12px;
-}
-.stay-card__details[open] summary::before { transform: rotate(90deg); }
-
-.stay-card__rooms {
-  margin: 12px 0 10px;
-  padding-left: 20px;
-  list-style: disc;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--clr-catalog-text);
-}
-
-.stay-card__features {
-  margin: 6px 0 0;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--clr-catalog-muted);
-}
-.stay-card__features strong {
-  color: var(--clr-catalog-text);
-  font-weight: 600;
-}
-
-/* На мобильных три цены переносим строкой */
-@media (max-width: 767.98px) {
-  .stay-card__details {
-    margin-bottom: 14px;
-  }
-}
-
-/* --- 12.5 Empty State --- */
-.catalog__empty {
-    margin-top: 32px;
-    padding: 32px 24px;
-    text-align: center;
-    font-size: 15px;
-    color: var(--clr-catalog-muted);
-    background: var(--clr-catalog-surface);
-    border: 1px dashed var(--clr-catalog-line);
-    border-radius: var(--radius);
-}
-
-.catalog__empty-reset {
-    margin-left: 6px;
-    padding: 0;
-    border: none;
-    background: transparent;
-    color: var(--clr-catalog-accent);
-    font: inherit;
-    font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    cursor: pointer;
-    transition: color var(--transition);
-}
-
-.catalog__empty-reset:hover {
-    color: var(--clr-catalog-accent-strong);
-}
-
-/* --- 12.6 Filtering States --- */
-.filter__chip input:disabled + span,
-.filter__option:has(.filter__input:disabled) {
-    opacity: .45;
-    cursor: not-allowed;
-}
-
-.catalog__list.is-filtering .stay-card.is-hidden,
-.stay-card[hidden] {
-    display: none;
-}
-
-/* --- 12.7 Responsive Adjustments --- */
-
-/* Tablet: Stack card vertically if needed, but keep horizontal on large tablets if possible. 
-   Here we force vertical stack below lg breakpoint for better readability of long descriptions */
-@media (max-width: 991.98px) {
-    .filter {
-        position: static;
-        margin-bottom: 24px;
-    }
-    
-    /* On tablet/mobile, the grid inside stay-card might need adjustment if cols don't behave perfectly */
-    .stay-card__media {
-        min-height: 200px;
-    }
-}
-
-/* Mobile: Full vertical stack */
-@media (max-width: 767.98px) {
-    .catalog {
-        padding-block: 48px 64px;
-    }
-    
-    .catalog__head {
-        margin-bottom: 24px;
-    }
-    
-    .filter {
-        padding: 18px;
-    }
-    
-    .filter__title {
-        font-size: 22px;
-    }
-    
-    /* Ensure card body doesn't get squeezed */
-    .stay-card__body {
-        padding: 20px 18px 18px;
-    }
-    
-    .stay-card__title {
-        font-size: 22px;
-    }
-    
-    .stay-card__top {
-        flex-direction: column;
-        gap: 4px;
-    }
-    
-    .stay-card__price {
-        text-align: left;
-    }
-    
-    .stay-card__price strong {
-        display: inline;
-        font-size: 18px;
-    }
-    
-    .stay-card__media,
-    .stay-card__image {
-        min-height: 200px;
-    }
-}
-
-@media (max-width: 575.98px) {
-    .filter__price-row {
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .stay-card__meta {
-        gap: 6px 14px;
-    }
-    
-    .stay-card__actions {
-        flex-wrap: wrap;
-    }
-    
-    .stay-card__actions .btn {
-        flex: 1 1 auto;
-        justify-content: center;
-    }
-}
-
-/* --- 12.8 Reduced Motion --- */
-@media (prefers-reduced-motion: reduce) {
-    .stay-card,
-    .stay-card__fav,
-    .filter__reset,
-    .catalog__empty-reset {
-        transition: none;
-    }
-    .stay-card:hover {
-        transform: none;
-    }
-}
-
-/* =========================================================
-13. Каталог — сетки и карточки СПА / ВЕЛО
-========================================================= */
-
-/* --- 13.1 Сетка для spa (2 колонки на десктопе) --- */
-.catalog__list--spa {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-@media (max-width: 991.98px) {
-  .catalog__list--spa { grid-template-columns: 1fr; }
-}
-
-/* --- 13.2 Сетка для bike (1 колонка, карточка-строка) --- */
-.catalog__list--bike {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-/* --- 13.3 spa-card --- */
-.spa-card {
+.filter__price-field {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--clr-catalog-muted);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.filter__price-number {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--clr-catalog-line);
+  border-radius: var(--radius-sm);
+  background: var(--clr-catalog-bg);
+  color: var(--clr-catalog-text);
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.filter__price-number:focus-visible {
+  outline: 2px solid var(--clr-catalog-accent);
+  outline-offset: 1px;
+}
+
+/* --- 12.3 Список карточек --- */
+.catalog__list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- 12.4 catalog-card — единая карточка --- */
+.catalog-card {
+  height: clamp(300px, 26vw, 380px);
   background: var(--clr-catalog-surface);
   border: 1px solid var(--clr-catalog-line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
-  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+  display: grid;
+  grid-template-columns: minmax(220px, 32%) 1fr;
+  cursor: pointer;
+  transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
 }
-.spa-card:hover {
+.catalog-card:hover {
   box-shadow: var(--clr-card-hover-shadow);
   border-color: transparent;
   transform: translateY(-2px);
 }
-
-.spa-card__media {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
+.catalog-card:focus-visible {
+  outline: 2px solid var(--clr-catalog-accent);
+  outline-offset: -2px;
 }
-.spa-card__image {
+
+/* Media */
+.catalog-card__media {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: var(--clr-surface-2);
+}
+.catalog-card__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform var(--transition);
 }
-.spa-card:hover .spa-card__image { transform: scale(1.04); }
-
-.spa-card__tag {
+.catalog-card__tag {
   position: absolute;
   top: 14px;
   left: 14px;
@@ -1536,318 +1091,382 @@ button:focus-visible {
   letter-spacing: .04em;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(243, 239, 231, .92);
+  background-color: rgba(243, 239, 231, .92);
   color: var(--clr-catalog-accent);
   backdrop-filter: blur(4px);
+  z-index: 2;
 }
 
-.spa-card__body {
+/* Body — grid: header | content | footer */
+.catalog-card__body {
+  height: 100%;
+  padding: 14px 18px 12px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 4px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* HEADER */
+.catalog-card__top {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 12px;
-  padding: 20px 22px 22px;
-  flex: 1;
+  isolation: isolate;
+  min-height: calc(1.15em * 24px * 2 + 4px);
 }
-
-.spa-card__title {
+.catalog-card__title {
+  flex: 1 1 auto;
+  min-width: 0;
   font-family: 'Cormorant Garamond', serif;
-  font-size: 24px;
+  font-size: clamp(19px, 1.6vw, 24px);
   font-weight: 600;
   margin: 0;
   color: var(--clr-catalog-text);
-  line-height: 1.2;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: calc(1.15em * 2);
 }
 
-.spa-card__text {
-  margin: 0;
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: var(--clr-catalog-muted);
-  flex: 1;
-}
-
-.spa-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: 13px;
-  color: var(--clr-catalog-text);
-}
-
-.spa-card__foot {
+/* Цена — твой вариант */
+.catalog-card__price {
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 150px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-top: 14px;
-  border-top: 1px solid var(--clr-catalog-line);
-  margin-top: 4px;
-}
-
-.spa-card__price {
+  justify-content: flex-end;
+  gap: 6px;
   font-size: 13px;
   color: var(--clr-catalog-muted);
   white-space: nowrap;
+  line-height: 1.4;
+  padding: 4px 0;
+  margin-right: 14px;
+  margin-top: 6px;
+  transition: color var(--transition);
+  z-index: 0;
 }
-.spa-card__price strong {
-  font-size: 20px;
-  color: var(--clr-catalog-accent);
+.catalog-card__price strong {
+  font-size: 18px;
   font-weight: 600;
+  color: var(--clr-catalog-accent);
 }
-
-/* --- 13.4 bike-card (горизонтальная компактная) --- */
-.bike-card {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  background: var(--clr-catalog-surface);
-  border: 1px solid var(--clr-catalog-line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
-}
-.bike-card:hover {
-  box-shadow: var(--clr-card-hover-shadow);
-  border-color: transparent;
-  transform: translateY(-2px);
-}
-
-.bike-card__media {
-  position: relative;
-  overflow: hidden;
-}
-.bike-card__image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.bike-card__tag {
+.catalog-card__price::before {
+  content: "";
   position: absolute;
-  top: 12px;
-  left: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .04em;
-  padding: 5px 10px;
+  inset: -4px -8px;
   border-radius: 999px;
-  background: rgba(243, 239, 231, .92);
-  color: var(--clr-catalog-accent);
+  background: var(--clr-catalog-accent);
+  opacity: 0;
+  transition: opacity var(--transition);
+  z-index: -1;
+  pointer-events: none;
+}
+.catalog-card.is-calendar .catalog-card__price { color: #fff; }
+.catalog-card.is-calendar .catalog-card__price strong { color: #fff; }
+.catalog-card.is-calendar .catalog-card__price::before { opacity: 1; }
+
+/* CONTENT — свободная область, обе панели лежат здесь */
+.catalog-card__content {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
 }
 
-.bike-card__body {
-  padding: 18px 22px;
+/* Панели — взаимоисключающие */
+.catalog-card__panel {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
 }
+.catalog-card__panel[hidden] { display: none; }
 
-.bike-card__top {
+/* INFO: описание сжимается, теги приоритет */
+.catalog-card__info-main {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  gap: 4px;
 }
-.bike-card__title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 22px;
-  font-weight: 600;
+.catalog-card__panel--info .catalog-card__text {
+  flex: 1 1 auto;
+  min-height: 0;
   margin: 0;
-  color: var(--clr-catalog-text);
-}
-.bike-card__price {
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--clr-catalog-muted);
-  white-space: nowrap;
+  display: block;
+  overflow: hidden;
 }
-.bike-card__price strong {
-  font-size: 18px;
-  color: var(--clr-catalog-accent);
-  font-weight: 600;
-}
-
-.bike-card__text {
-  margin: 0;
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: var(--clr-catalog-muted);
-  flex: 1;
-}
-
-.bike-card__meta {
+.catalog-card__panel--info .catalog-card__badges {
+  flex: 0 0 auto;
+  max-height: calc(1.4em * 2);
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 16px;
-  list-style: none;
+  gap: 4px 10px;
   margin: 0;
-  padding: 0;
+  padding: 0 20px 0 0;
+  overflow: hidden;
+  position: relative;
+  align-content: flex-start;
+  list-style: none;
+}
+.catalog-card__panel--info .catalog-card__badges li {
   font-size: 13px;
+  font-weight: 500;
   color: var(--clr-catalog-text);
+  white-space: nowrap;
+  flex: 0 0 auto;
+  line-height: 1.4;
 }
-
-.bike-card__actions {
+/* «…» справа — по умолчанию скрыто */
+.catalog-card__panel--info .catalog-card__badges::after {
+  content: "…";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 28px;
   display: flex;
+  align-items: center;
   justify-content: flex-end;
-  margin-top: 4px;
+  padding-right: 2px;
+  background: linear-gradient(to right, transparent, var(--clr-catalog-surface) 60%);
+  color: var(--clr-catalog-muted);
+  font-weight: 600;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition);
 }
 
-/* --- 13.5 Адаптив карточек проката --- */
+/* Показываем только при переполнении */
+.catalog-card__panel--info .catalog-card__badges.is-overflow::after {
+  opacity: 1;
+}
+
+/* CALENDAR: на всю свободную область */
+.catalog-card__panel--calendar {
+  display: flex;
+  flex-direction: column;
+}
+.catalog-card__panel--calendar .stay-card__calendar,
+.catalog-card__panel--calendar [data-calendar] {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.catalog-card__panel--calendar .cal {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* FOOTER */
+.catalog-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 6px;
+  flex: 0 0 auto;
+  min-height: 40px;
+  background: var(--clr-catalog-surface);
+  cursor: default;
+}
+.catalog-card__actions .btn { cursor: pointer; }
+.catalog-card__actions .btn:hover { color: #ffffff; }
+
+/* --- 12.5 Empty State --- */
+.catalog__empty {
+  margin-top: 0;
+  padding: 32px 24px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--clr-catalog-muted);
+  background: var(--clr-catalog-surface);
+  border: 1px dashed var(--clr-catalog-line);
+  border-radius: var(--radius);
+}
+.catalog__empty[hidden] { display: none; }
+
+.catalog__empty-link {
+  margin-left: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--clr-catalog-accent);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+.catalog__empty-link:hover { color: var(--clr-catalog-accent-strong); }
+
+/* --- 12.6 Filtering States --- */
+.filter__chip input:disabled + span,
+.filter__option:has(.filter__input:disabled) {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.catalog__list.is-filtering .catalog-card.is-hidden,
+.catalog-card[hidden] { display: none; }
+
+/* --- 12.7 Адаптив каталога --- */
+@media (max-width: 991.98px) {
+  .filter {
+    position: static;
+    margin-bottom: 24px;
+  }
+  /* Карточка вертикальная — фото сверху */
+  .catalog-card {
+    height: var(--card-stay-h-mobile);
+  }
+  .catalog-card__row { height: auto; }
+  .catalog-card__media {
+    height: 180px;
+    flex: 0 0 180px;
+  }
+  .catalog-card__body {
+    height: auto;
+    flex: 1 1 auto;
+  }
+}
+
 @media (max-width: 767.98px) {
-  .bike-card {
-    grid-template-columns: 1fr;
-  }
-  .bike-card__media {
-    aspect-ratio: 16 / 9;
-  }
-  .bike-card__top {
-    flex-direction: column;
-    gap: 4px;
-  }
+  .catalog { padding-block: 48px 64px; }
+  .catalog__head { margin-bottom: 24px; }
+
+  .filter { padding: 18px; }
+  .filter__title { font-size: 22px; }
+
+  .catalog-card__body { padding: 16px 18px 16px; }
+  .catalog-card__title { font-size: 20px; }
+  .catalog-card__top { flex-direction: column; gap: 4px; }
+  .catalog-card__price { text-align: left; }
+
+  .catalog-card__media { height: 180px; }
 }
 
 @media (max-width: 575.98px) {
-  .catalog__list--spa { gap: 16px; }
-  .spa-card__body { padding: 18px; }
-  .spa-card__title { font-size: 22px; }
-  .spa-card__foot {
+  .filter__price-row {
     flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
+    gap: 8px;
   }
-  .spa-card__foot .btn { width: 100%; }
-
-  .bike-card__body { padding: 16px 18px; }
-  .bike-card__title { font-size: 20px; }
+  .catalog-card__meta { gap: 8px 12px; }
+  .catalog-card__actions { flex-wrap: wrap; }
+  .catalog-card__actions .btn { flex: 1 1 auto; justify-content: center; }
 }
 
-/* --- 13.6 Убираем фиксированную высоту media у stay-card при grid-раскладке --- */
-.catalog__list--stay .stay-card__row { min-height: 240px; }
+/* =========================================================
+   13. (удалено — унифицировано в 12.4 catalog-card)
+   ========================================================= */
 
 /* =========================================================
-14. Переключатель «описание ↔ календарь» и мини-календарь
-========================================================= */
+   14. Переключатель «описание ↔ календарь», мини-календарь
+   ========================================================= */
 
-/* --- 14.1 Кнопка-стрелка в цене --- */
-.stay-card__toggle,
-.spa-card__toggle,
-.bike-card__toggle {
+/* --- 14.1 Кнопка-стрелка (без прыжков при hover/focus) --- */
+.card-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  margin-left: 8px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 1px solid var(--clr-catalog-line);
   border-radius: 50%;
   background: var(--clr-catalog-surface);
   color: var(--clr-catalog-accent);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1;
   cursor: pointer;
   vertical-align: middle;
-  transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+  /* Никакого transform — чтобы не «толкать» соседей */
 }
-.stay-card__toggle:hover,
-.spa-card__toggle:hover,
-.bike-card__toggle:hover {
+.card-toggle:hover {
   background: var(--clr-catalog-accent);
   border-color: var(--clr-catalog-accent);
   color: #fff;
-  transform: scale(1.05);
+  box-shadow: 0 0 0 2px rgba(40, 79, 68, .15);
 }
-.stay-card__toggle:focus-visible,
-.spa-card__toggle:focus-visible,
-.bike-card__toggle:focus-visible {
+.card-toggle:focus-visible {
   outline: 2px solid var(--clr-catalog-accent);
   outline-offset: 2px;
 }
 
-/* --- 14.2 Панели (info / calendar) --- */
-.stay-card__panel,
-.spa-card__panel,
-.bike-card__panel {
-  display: flex;
-  flex-direction: column;
-  gap: inherit;
-  height: 100%;
-}
-.stay-card__panel[hidden],
-.spa-card__panel[hidden],
-.bike-card__panel[hidden] {
-  display: none;
-}
-
-/* --- 14.3 Цена в режиме календаря — меняем вид --- */
-.stay-card.is-calendar .stay-card__price,
-.spa-card.is-calendar .spa-card__price,
-.bike-card.is-calendar .bike-card__price {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
+/* --- 14.2 Цена в режиме календаря — та же геометрия, только фон --- */
+.catalog-card.is-calendar .catalog-card__price {
   background: var(--clr-catalog-accent);
   color: #fff;
   border-radius: 999px;
 }
-.stay-card.is-calendar .stay-card__price strong,
-.spa-card.is-calendar .spa-card__price strong,
-.bike-card.is-calendar .bike-card__price strong {
+.catalog-card.is-calendar .catalog-card__price strong {
   color: #fff;
 }
-.stay-card.is-calendar .stay-card__price {
-  /* цена переезжает вправо в шапке — уже flex, но можно выровнять */
-  margin-left: auto;
-}
 
-/* --- 14.4 Мини-календарь --- */
-.stay-card__calendar {
-  margin-top: 12px;
-}
-
-.stay-card__free {
-  margin: 12px 0;
-  padding: 14px 16px;
+/* --- 14.3 Плашка «все даты свободны» --- */
+.card-free {
+  margin: 8px 0;
+  padding: 12px 14px;
   background: rgba(40, 79, 68, .06);
   border-radius: var(--radius-sm);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--clr-catalog-accent);
   text-align: center;
+  flex: 0 0 auto;
 }
 
+/* --- 14.4 Мини-календарь (компактный) --- */
 .cal {
   border: 1px solid var(--clr-catalog-line);
   border-radius: var(--radius-sm);
-  padding: 12px;
+  padding: 8px 10px;
   background: var(--clr-catalog-bg);
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .cal__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex: 0 0 auto;
 }
 .cal__title {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--clr-catalog-text);
   text-transform: capitalize;
 }
 .cal__nav {
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
   border: 1px solid var(--clr-catalog-line);
   border-radius: 50%;
   background: var(--clr-catalog-surface);
   color: var(--clr-catalog-text);
-  font-size: 14px;
+  font-size: 11px;
   line-height: 1;
   cursor: pointer;
+  padding: 0;
   transition: background var(--transition), border-color var(--transition);
 }
 .cal__nav:hover {
@@ -1860,25 +1479,33 @@ button:focus-visible {
 .cal__grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 1px;
 }
+.cal__weekdays { flex: 0 0 auto; }
 .cal__weekday {
   text-align: center;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 600;
   color: var(--clr-catalog-muted);
   text-transform: uppercase;
-  padding: 4px 0;
+  padding: 2px 0;
+  line-height: 1;
+}
+
+.cal__grid {
+  flex: 1;
+  min-height: 0;
+  grid-auto-rows: 1fr;
 }
 
 .cal__cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 1;
-  font-size: 13px;
-  border-radius: 6px;
+  font-size: 11px;
+  border-radius: 4px;
   color: var(--clr-catalog-text);
+  line-height: 1;
   transition: background var(--transition), color var(--transition);
 }
 .cal__cell--empty { background: transparent; }
@@ -1893,32 +1520,498 @@ button:focus-visible {
   cursor: not-allowed;
 }
 
-.cal__legend {
-  display: flex;
-  gap: 14px;
-  margin-top: 10px;
-  font-size: 12px;
+.cal__hint {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 4px;
+  font-size: 10px;
   color: var(--clr-catalog-muted);
 }
-.cal__legend-item { display: inline-flex; align-items: center; gap: 6px; }
-.cal__dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-.cal__dot--free   { background: rgba(40, 79, 68, .25); }
-.cal__dot--booked { background: rgba(180, 60, 60, .4); }
 
-/* --- 14.5 Адаптив --- */
+.cal__hint-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.cal__hint-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cal__hint-dot--free   { background: rgba(40, 79, 68, .35); }
+.cal__hint-dot--booked { background: rgba(180, 60, 60, .5); }
+
+/* Убрать старую легенду внизу */
+.cal__legend { display: none; }
+
+/* --- 14.5 Адаптив переключателя и календаря --- */
+@media (max-width: 767.98px) {
+  .cal { padding: 8px; }
+  .cal__cell { font-size: 10px; }
+}
 @media (max-width: 575.98px) {
-  .stay-card__toggle,
-  .spa-card__toggle,
-  .bike-card__toggle {
-    width: 28px;
-    height: 28px;
-    font-size: 18px;
+  .card-toggle { width: 26px; height: 26px; font-size: 16px; }
+  .cal__cell { font-size: 11px; }
+}
+
+/* =========================================================
+   15. Модалка «Подробнее»
+   ========================================================= */
+.stay-modal {
+  border-radius: var(--radius);
+  border: 1px solid var(--clr-line);
+  background: var(--clr-bg);
+}
+
+.stay-modal .modal-header {
+  border-bottom: 1px solid var(--clr-line);
+  padding: 20px 24px;
+}
+.stay-modal .modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--clr-dark);
+  margin: 0;
+}
+.stay-modal .modal-body {
+  padding: 20px 24px 24px;
+}
+
+/* Галерея */
+.stay-modal__gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stay-modal__gallery-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
+/* Полное описание */
+.stay-modal__full {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--clr-dark);
+  margin: 0 0 16px;
+}
+
+/* Секции details */
+.stay-modal__subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--clr-accent);
+  margin: 16px 0 6px;
+}
+.stay-modal__rooms {
+  list-style: disc;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--clr-dark);
+}
+
+/* Цена в модалке */
+.stay-modal__price {
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--clr-line);
+  font-size: 14px;
+  color: var(--clr-muted);
+}
+.stay-modal__price strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--clr-accent);
+}
+
+/* Кнопка «Заказать» в модалке */
+.stay-modal__actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Fallback без Bootstrap */
+.stay-modal.is-open {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  overflow-y: auto;
+  background: rgba(24, 33, 28, .6);
+}
+
+/* =========================================================
+   16. Адаптив catalog-card
+   ========================================================= */
+
+@media (max-width: 991.98px) {
+  .catalog-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: 200px 1fr;
+    height: 540px;
   }
-  .cal__cell { font-size: 12px; }
-  .cal { padding: 10px; }
+  .catalog-card__media { height: 200px; }
+  .catalog-card__body { height: auto; }
+}
+
+@media (max-width: 767.98px) {
+  .catalog { padding-block: 48px 64px; }
+  .catalog__head { margin-bottom: 24px; }
+  .filter { padding: 18px; }
+  .filter__title { font-size: 22px; }
+
+  .catalog-card {
+    height: 620px;
+    grid-template-rows: 180px 1fr;
+  }
+  .catalog-card__media { height: 180px; }
+  .catalog-card__body { padding: 14px 16px 14px; }
+  .catalog-card__title { font-size: 20px; }
+  .catalog-card__top { gap: 10px; }
+  .catalog-card__price { min-width: 130px; text-align: right; }
+
+  .filter__price-row { flex-direction: column; gap: 8px; }
+}
+
+@media (max-width: 575.98px) {
+  .catalog-card {
+    height: 620px;
+    grid-template-rows: 170px 1fr;
+  }
+  .catalog-card__media { height: 170px; }
+  .catalog-card__actions { flex-wrap: wrap; }
+  .catalog-card__actions .btn { flex: 1 1 auto; justify-content: center; }
+  .catalog-card__badges { gap: 6px 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-card,
+  .catalog-card:hover,
+  .card-toggle {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* =========================================================
+   17. Ресторан
+   ========================================================= */
+.restaurant {
+  position: relative;
+  background-color: var(--clr-footer-bg);
+  background-image:
+    url("../images/blackwood_restaurant_back.png"),
+    linear-gradient(rgba(10, 15, 13, .72), rgba(10, 15, 13, .72));
+  background-repeat: repeat-y, no-repeat;
+  background-position: top center, top center;
+  background-size: 100% auto, 100% 100%;
+  color: var(--clr-footer-title);
+  padding-block: 30px 96px;
+}
+
+/* Head — наследует цвета section-head, но на тёмном фоне */
+.restaurant .section-head__eyebrow { color: var(--clr-gold); }
+.restaurant .section-head__title   { color: var(--clr-gold); }
+.restaurant .section-head__sub     { color: var(--clr-footer-text); }
+
+/* --- 17.1 Фильтр --- */
+.restaurant-filter {
+  position: sticky;
+  top: calc(var(--navbar-h) + 16px);
+  background: rgba(20, 25, 22, .78);
+  border: 1px solid rgba(184, 147, 90, .28);
+  border-radius: var(--radius);
+  backdrop-filter: blur(8px);
+  padding: 22px;
+  color: var(--clr-gold);
+}
+.restaurant-filter__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.restaurant-filter__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--clr-gold);
+}
+.restaurant-filter__reset {
+  border: none;
+  background: transparent;
+  color: var(--clr-gold-strong);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.restaurant-filter__reset:hover { color: var(--clr-gold); }
+
+.restaurant-filter__group {
+  border: none;
+  border-top: 1px solid rgba(184, 147, 90, .2);
+  margin: 0;
+  padding: 16px 0 0;
+}
+.restaurant-filter__group + .restaurant-filter__group { margin-top: 16px; }
+
+.restaurant-filter__legend {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: rgba(255, 255, 255, .7);
+  margin: 0 0 10px;
+  padding: 0;
+  width: 100%;
+}
+.restaurant-filter__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(255, 255, 255, .88);
+}
+.restaurant-filter__option input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--clr-gold);
+}
+.restaurant-filter__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.restaurant-filter__chip {
+  position: relative;
+  cursor: pointer;
+}
+.restaurant-filter__chip input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.restaurant-filter__chip span {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(184, 147, 90, .35);
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, .85);
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.restaurant-filter__chip input:checked + span {
+  background: var(--clr-gold);
+  border-color: var(--clr-gold);
+  color: var(--clr-dark);
+}
+.restaurant-filter__price-out {
+  font-size: 12px;
+  color: var(--clr-gold);
+  font-weight: 600;
+}
+.restaurant-filter__price-row {
+  display: flex;
+  gap: 8px;
+}
+.restaurant-filter__price-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, .6);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.restaurant-filter__price-field input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(184, 147, 90, .3);
+  border-radius: var(--radius-sm);
+  background: rgba(10, 15, 13, .6);
+  color: var(--clr-gold);
+  font-size: 14px;
+  font-family: inherit;
+}
+.restaurant-filter__price-field input:focus-visible {
+  outline: 2px solid var(--clr-gold);
+  outline-offset: 1px;
+}
+
+/* --- 17.2 Сетка карточек --- */
+.restaurant-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 767.98px) {
+  .restaurant-list { grid-template-columns: 1fr; }
+}
+
+/* --- 17.3 Карточка блюда --- */
+.restaurant-card {
+  background: rgba(20, 25, 22, .82);
+  border: 1px solid rgba(184, 147, 90, .25);
+  border-radius: var(--radius);
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+.restaurant-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--clr-gold);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+}
+.restaurant-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: rgba(0, 0, 0, .5);
+}
+.restaurant-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition);
+}
+.restaurant-card:hover .restaurant-card__image { transform: scale(1.04); }
+.restaurant-card__body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.restaurant-card__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--clr-gold);
+  line-height: 1.2;
+}
+.restaurant-card__text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, .75);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+.restaurant-card__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.restaurant-card__price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--clr-gold);
+  margin-right: auto;
+}
+.restaurant-card__order {
+  background: var(--clr-gold);
+  color: var(--clr-dark);
+  border-color: var(--clr-gold);
+}
+.restaurant-card__order:hover {
+  background: var(--clr-gold-strong);
+  border-color: var(--clr-gold-strong);
+  color: var(--clr-dark);
+}
+.restaurant-card__order[hidden] { display: none; }
+
+.restaurant-card__counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(184, 147, 90, .12);
+  border: 1px solid rgba(184, 147, 90, .4);
+  border-radius: 999px;
+  padding: 2px;
+}
+.restaurant-card__counter[hidden] { display: none; }
+.restaurant-card__qty-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--clr-gold);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.restaurant-card__qty-btn:hover {
+  background: var(--clr-gold);
+  color: var(--clr-dark);
+}
+.restaurant-card__qty {
+  min-width: 24px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--clr-gold);
+}
+
+/* --- 17.4 Пустое состояние --- */
+.restaurant__empty {
+  grid-column: 1 / -1;
+  padding: 32px 24px;
+  text-align: center;
+  border: 1px dashed rgba(184, 147, 90, .4);
+  border-radius: var(--radius);
+  color: rgba(255, 255, 255, .7);
+  font-size: 15px;
+  background: rgba(20, 25, 22, .5);
+}
+.restaurant__empty[hidden] { display: none; }
+
+/* --- 17.5 Адаптив --- */
+@media (max-width: 991.98px) {
+  .restaurant-filter {
+    position: static;
+    margin-bottom: 24px;
+  }
+  .restaurant { padding-block: 48px 64px; }
+}
+@media (max-width: 575.98px) {
+  .restaurant-card__title { font-size: 20px; }
+  .restaurant-card__price { font-size: 18px; }
+  .restaurant-card__foot { flex-wrap: wrap; }
+  .restaurant-card__order { flex: 1 1 auto; justify-content: center; }
 }

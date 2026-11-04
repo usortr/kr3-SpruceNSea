@@ -7,6 +7,10 @@ window.SS_CALENDAR = (function () {
                   'июль','август','сентябрь','октябрь','ноябрь','декабрь'];
   const WEEKDAYS = ['пн','вт','ср','чт','пт','сб','вс'];
 
+  /* Глобальное состояние месяца — общее для всех календарей */
+  let globalView = null;
+
+
   function startOfMonth(date) {
     return new Date(date.getFullYear(), date.getMonth(), 1);
   }
@@ -14,6 +18,23 @@ window.SS_CALENDAR = (function () {
   /* Понедельник = 0 */
   function weekdayIndex(date) {
     return (date.getDay() + 6) % 7;
+  }
+
+    function ensureGlobalView() {
+    if (globalView) return globalView;
+    const today = new Date();
+    globalView = { year: today.getFullYear(), month: today.getMonth() };
+    return globalView;
+  }
+
+  function shiftMonth(delta) {
+    const v = ensureGlobalView();
+    let month = v.month + delta;
+    let year  = v.year;
+    if (month < 0)  { month = 11; year -= 1; }
+    if (month > 11) { month = 0;  year += 1; }
+    globalView = { year, month };
+    return globalView;
   }
 
   /* Рендер календаря на месяц.
@@ -59,19 +80,19 @@ window.SS_CALENDAR = (function () {
     return `
       <div class="cal" data-cal="${id}">
         <div class="cal__head">
-          <button type="button" class="cal__nav" data-cal-prev aria-label="Предыдущий месяц">‹</button>
-          <span class="cal__title">${MONTHS[month]} ${year}</span>
-          <button type="button" class="cal__nav" data-cal-next aria-label="Следующий месяц">›</button>
+        <button type="button" class="cal__nav" data-cal-prev aria-label="Предыдущий месяц">‹</button>
+        <span class="cal__title">${MONTHS[month]} ${year}</span>
+        <span class="cal__hint" aria-hidden="true">
+            <span class="cal__hint-item"><i class="cal__hint-dot cal__hint-dot--free"></i>свободно</span>
+            <span class="cal__hint-item"><i class="cal__hint-dot cal__hint-dot--booked"></i>занято</span>
+        </span>
+        <button type="button" class="cal__nav" data-cal-next aria-label="Следующий месяц">›</button>
         </div>
         <div class="cal__weekdays">
           ${WEEKDAYS.map(d => `<span class="cal__weekday">${d}</span>`).join('')}
         </div>
         <div class="cal__grid">
           ${cells.join('')}
-        </div>
-        <div class="cal__legend">
-          <span class="cal__legend-item"><i class="cal__dot cal__dot--free"></i> свободно</span>
-          <span class="cal__legend-item"><i class="cal__dot cal__dot--booked"></i> занято</span>
         </div>
       </div>`;
   }
@@ -83,14 +104,31 @@ window.SS_CALENDAR = (function () {
     const view   = { year: today.getFullYear(), month: today.getMonth() };
 
     return `
-      <div class="stay-card__calendar" data-calendar data-cal-id="${id}">
+        <div class="catalog-card__calendar" data-calendar data-cal-id="${id}">
         ${renderMonth(id, view, booked, today)}
-      </div>`;
+        </div>`;
   }
 
-  /* Навигация по месяцам — делегирование внутри панели */
+  /* Перерисовать ВСЕ календари на странице под общий месяц */
+  function redrawAll() {
+    const today = new Date();
+    const view  = ensureGlobalView();
+
+    document.querySelectorAll('[data-calendar]').forEach(wrap => {
+      const id = wrap.dataset.calId;
+      if (!id) return;
+      const booked = window.SS_AVAILABILITY.getBooked(id);
+      wrap.innerHTML = renderMonth(id, view, booked, today);
+    });
+  }
+
+  /* Делегирование кликов — глобально по документу */
+  let bound = false;
   function bind(root) {
-    root.addEventListener('click', (e) => {
+    if (bound) return;
+    bound = true;
+
+    (root || document).addEventListener('click', (e) => {
       const prev = e.target.closest('[data-cal-prev]');
       const next = e.target.closest('[data-cal-next]');
       if (!prev && !next) return;
@@ -98,31 +136,10 @@ window.SS_CALENDAR = (function () {
       e.preventDefault();
       e.stopPropagation();
 
-      const wrap = root.querySelector('[data-calendar]');
-      if (!wrap) return;
-
-      const id = wrap.dataset.calId;
-      const titleEl = wrap.querySelector('.cal__title');
-      const current = titleEl.textContent.split(' ');
-      const monthName = current[0].toLowerCase();
-      let month = MONTHS.indexOf(monthName);
-      let year  = Number(current[1]);
-
-      if (prev) {
-        month -= 1;
-        if (month < 0) { month = 11; year -= 1; }
-      } else {
-        month += 1;
-        if (month > 11) { month = 0; year += 1; }
-      }
-
-      const booked = window.SS_AVAILABILITY.getBooked(id);
-      const today  = new Date();
-
-      /* Перерисовываем только календарь внутри этой панели */
-      wrap.innerHTML = renderMonth(id, { year, month }, booked, today);
+      shiftMonth(prev ? -1 : 1);
+      redrawAll();
     });
   }
 
-  return { renderMonth, renderPanel, bind };
+  return { renderMonth, renderPanel, bind, redrawAll };
 })();
