@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Контакты Spruce & Sea — как добраться, связаться и задать вопрос.">
+    <title>Контакты — Spruce &amp; Sea</title>
+
+    <!-- Bootstrap Grid -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+
+    <header class="navbar-site">
+        <div class="container">
+            <div class="navbar-site__inner">
+                <a href="index.html" class="logo">
+                    <span class="logo__mark">❦</span>
+                    <span class="logo__text">Spruce <span>&amp;</span> Sea</span>
+                </a>
+
+                <div class="navbar-site__actions">
+
+                    <button
+                        class="burger"
+                        type="button"
+                        aria-label="Открыть меню"
+                        aria-expanded="false"
+                        aria-controls="site-nav">
+                        <span class="burger__line"></span>
+                        <span class="burger__line"></span>
+                        <span class="burger__line"></span>
+                    </button>
+
+                    <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
+                        <ul class="site-nav__list" data-nav-list>
+                            <li class="site-nav__item"><a href="index.html" class="site-nav__link">Главная</a></li>
+                            <li class="site-nav__item"><a href="catalog.html?type=stays" class="site-nav__link">Номера &amp; коттеджи</a></li>
+                            <li class="site-nav__item"><a href="catalog.html?type=spa" class="site-nav__link">СПА &amp; баня</a></li>
+                            <li class="site-nav__item"><a href="catalog.html?type=bikes" class="site-nav__link">Велосипеды &amp; сапы</a></li>
+                            <li class="site-nav__item"><a href="restaurant.html" class="site-nav__link">Ресторан</a></li>
+                            <li class="site-nav__item"><a href="contacts.html" class="site-nav__link">Контакты</a></li>
+                        </ul>
+                        <span class="site-nav__underline" data-nav-underline aria-hidden="true"></span>
+                    </nav>
+
+                    <button
+                        class="cart-toggle"
+                        type="button"
+                        aria-label="Открыть корзину заказа"
+                        aria-expanded="false"
+                        aria-controls="cart-drawer"
+                        data-cart-toggle>
+                        <svg class="cart-toggle__icon" width="22" height="22" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="9" cy="20" r="1.4"/>
+                            <circle cx="18" cy="20" r="1.4"/>
+                            <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6"/>
+                        </svg>
+                        <span class="cart-toggle__badge" data-cart-count hidden>0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= CART DRAWER ================= -->
+    <div class="cart-drawer" id="cart-drawer" data-cart-drawer hidden>
+        <div class="cart-drawer__backdrop" data-cart-close></div>
+
+        <aside class="cart-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+        <header class="cart-drawer__head">
+            <h2 class="cart-drawer__title" id="cart-title">Ваш заказ</h2>
+            <button class="cart-drawer__close" type="button" aria-label="Закрыть корзину" data-cart-close>
+            <span aria-hidden="true">×</span>
+            </button>
+        </header>
+
+        <div class="cart-drawer__body">
+            <div class="cart-drawer__empty">
+            <span class="cart-drawer__empty-icon" aria-hidden="true">🛒</span>
+            <p class="cart-drawer__empty-title">Заказ пока пуст</p>
+            <p class="cart-drawer__empty-text">
+                Начните с выбора жилья — потом добавите СПА, велосипеды или ужин.
+            </p>
+            <a href="catalog.html?type=stays" class="cart-drawer__empty-link">
+                Перейти к жилью →
+            </a>
+            </div>
+        </div>
+
+        <footer class="cart-drawer__foot" hidden data-cart-foot>
+            <div class="cart-drawer__total">
+            <span>Итого</span>
+            <strong data-cart-total>0 ₽</strong>
+            </div>
+            <a href="checkout.html" class="btn btn--primary cart-drawer__checkout">
+            Оформить заказ
+            </a>
+        </footer>
+        </aside>
+    </div>
+
+    <main class="page__main">
+
+        <!-- Contacts Section -->
+        <section class="contacts">
+            <div class="contacts__overlay"></div>
+
+            <div class="container contacts__container">
+                <div class="row g-4 contacts__grid">
+
+                    <!-- Слева: контакты -->
+                    <div class="col-lg-5">
+                        <div class="contacts-info">
+                            <p class="contacts-info__eyebrow">Свяжитесь с нами</p>
+                            <h1 class="contacts-info__title">Как нас найти</h1>
+                            <p class="contacts-info__lead">
+                                Мы всегда на связи. Позвоните, напишите или загляните —
+                                расскажем, как добраться и что взять с собой.
+                            </p>
+
+                            <ul class="contacts-info__list">
+                                <li class="contacts-info__item">
+                                    <span class="contacts-info__label">Телефон</span>
+                                    <a href="tel:+78120000000" class="contacts-info__value">+7 (812) 000-00-00</a>
+                                </li>
+                                <li class="contacts-info__item">
+                                    <span class="contacts-info__label">Почта</span>
+                                    <a href="mailto:hello@spruceandsea.ru" class="contacts-info__value">hello@spruceandsea.ru</a>
+                                </li>
+                                <li class="contacts-info__item">
+                                    <span class="contacts-info__label">Адрес</span>
+                                    <span class="contacts-info__value">Ленинградская обл.,<br>Приморское ш., 12</span>
+                                </li>
+                                <li class="contacts-info__item">
+                                    <span class="contacts-info__label">Ресепшн</span>
+                                    <span class="contacts-info__value">Круглосуточно</span>
+                                </li>
+                            </ul>
+
+                            <div class="contacts-info__social">
+                                <a href="#" class="contacts-info__social-link" aria-label="Telegram">Telegram</a>
+                                <a href="#" class="contacts-info__social-link" aria-label="ВКонтакте">ВКонтакте</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Справа: FAQ -->
+                    <div class="col-lg-7">
+                        <div class="contacts-faq">
+                            <h2 class="contacts-faq__title">Частые вопросы</h2>
+
+                            <div class="contacts-faq__list">
+                                <details class="contacts-faq__item">
+                                    <summary class="contacts-faq__summary">Как добраться до отеля?</summary>
+                                    <div class="contacts-faq__body">
+                                        От Финляндского вокзала — электричка до станции «Приморск», далее 10 минут на такси. На машине — по Приморскому шоссе, поворот на 12-м километре. Точку на карте пришлём в подтверждении брони.
+                                    </div>
+                                </details>
+
+                                <details class="contacts-faq__item">
+                                    <summary class="contacts-faq__summary">Можно ли приехать с питомцем?</summary>
+                                    <div class="contacts-faq__body">
+                                        Да, в шале «Семья» и коттедже «Дюна» — можно. Доплата 500 ₽ в сутки. Для питомца есть лежанка и миски, на территории — площадка для выгула.
+                                    </div>
+                                </details>
+
+                                <details class="contacts-faq__item">
+                                    <summary class="contacts-faq__summary">Во сколько заезд и выезд?</summary>
+                                    <div class="contacts-faq__body">
+                                        Заезд — с 15:00, выезд — до 12:00. Если нужно раньше или позже, напишите — постараемся подстроиться. Поздний выезд — 1 500 ₽.
+                                    </div>
+                                </details>
+
+                                <details class="contacts-faq__item">
+                                    <summary class="contacts-faq__summary">Есть ли парковка?</summary>
+                                    <div class="contacts-faq__body">
+                                        Да, бесплатная парковка на территории. У шале «Семья» и коттеджа «Дюна» — собственные места на 2–3 машины. Электромобиль можно зарядить у главного корпуса.
+                                    </div>
+                                </details>
+
+                                <details class="contacts-faq__item">
+                                    <summary class="contacts-faq__summary">Можно ли заказать завтрак в номер?</summary>
+                                    <div class="contacts-faq__body">
+                                        Да, завтрак в номер — 800 ₽ с гостя. Приносим с 8:00 до 11:00. Можно добавить при бронировании или заказать на ресепшн вечером.
+                                    </div>
+                                </details>
+
+                                <details class="contacts-faq__item">
+                                    <summary class="contacts-faq__summary">Что взять с собой?</summary>
+                                    <div class="contacts-faq__body">
+                                        Удобную обувь для леса, тёплый свитер на вечер, купальник для бани и купели. Полотенца, халаты и тапочки — в номерах и коттеджах.
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="site-footer">
+        <div class="container">
+        <div class="row g-4 site-footer__grid">
+
+            <div class="col-12 col-md-6 col-lg-4">
+            <a href="index.html" class="logo logo--footer">
+                <span class="logo__mark" aria-hidden="true">❦</span>
+                <span class="logo__text">Spruce &amp; Sea</span>
+            </a>
+            <p class="site-footer__desc">
+                Бутик-отель и коттеджи у моря. Уют, природа и тишина круглый год.
+            </p>
+            </div>
+
+            <div class="col-6 col-md-3 col-lg-2">
+            <h3 class="site-footer__title">Контакты</h3>
+            <ul class="site-footer__list">
+                <li><a href="tel:+78120000000">+7 (812) 000-00-00</a></li>
+                <li><a href="mailto:hello@spruceandsea.ru">hello@spruceandsea.ru</a></li>
+            </ul>
+            </div>
+
+            <div class="col-6 col-md-3 col-lg-3">
+            <h3 class="site-footer__title">Навигация</h3>
+            <ul class="site-footer__list">
+                <li><a href="catalog.html?type=stays">Номера &amp; коттеджи</a></li>
+                <li><a href="catalog.html?type=spa">СПА &amp; баня</a></li>
+                <li><a href="catalog.html?type=bikes">Велосипеды &amp; сапы</a></li>
+                <li><a href="restaurant.html">Ресторан</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+            </div>
+
+            <div class="col-12 col-md-12 col-lg-3">
+            <h3 class="site-footer__title">Адрес</h3>
+            <p class="site-footer__address">
+                Ленинградская обл.,<br>
+                Приморское ш., 12
+            </p>
+            <ul class="site-footer__list site-footer__list--social">
+                <li><a href="#" aria-label="Telegram">Telegram</a></li>
+                <li><a href="#" aria-label="ВКонтакте">ВКонтакте</a></li>
+            </ul>
+            </div>
+
+        </div>
+
+        <div class="site-footer__bottom">
+            <p class="site-footer__copy">© 2025 Spruce &amp; Sea. Все права защищены.</p>
+            <p class="site-footer__legal">ИНН 0000000000 · ОГРН 0000000000000</p>
+            <p class="site-footer__legal">
+            <a href="privacy.html">Политика конфиденциальности</a>
+            </p>
+        </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+    /* Аккордеон FAQ: открыт только один вопрос */
+    (function () {
+        const items = document.querySelectorAll('.contacts-faq__item');
+        if (!items.length) return;
+
+        items.forEach(item => {
+        item.addEventListener('toggle', () => {
+            if (!item.open) return;
+            items.forEach(other => {
+            if (other !== item && other.open) {
+                other.open = false;
+            }
+            });
+        });
+        });
+    })();
+    </script>
+</body>
+</html>
