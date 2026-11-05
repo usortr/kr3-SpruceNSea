@@ -352,91 +352,23 @@
   /* =========================================================
      10. Модалка «Подробнее» — клик по карточке
      ========================================================= */
-  function openDetails(item) {
-    const modalEl = document.getElementById('stayModal');
-    if (!modalEl) return;
-
-    const titleEl = modalEl.querySelector('[data-modal-title]');
-    const bodyEl  = modalEl.querySelector('[data-modal-body]');
-    if (!titleEl || !bodyEl) return;
-
-    titleEl.textContent = item.title;
-
-    /* Галерея */
-    const gallery = item.gallery && item.gallery.length
-      ? `<div class="stay-modal__gallery">
-           ${item.gallery.map((src, i) => `
-             <img src="${src}" alt="${item.title} — фото ${i + 1}"
-                  class="stay-modal__gallery-img" loading="lazy">
-           `).join('')}
-         </div>`
-      : '';
-
-    /* Большое описание */
-    const fullDesc = item.fullDescription
-      ? `<p class="stay-modal__full">${item.fullDescription}</p>`
-      : '';
-
-    /* Секции details */
-    const detailsHTML = (item.details || []).map(sec => {
-      const content = sec.items
-        ? `<ul class="stay-modal__rooms">${sec.items.map(i => `<li>${i}</li>`).join('')}</ul>`
-        : `<p>${sec.text || ''}</p>`;
-      return `<h3 class="stay-modal__subtitle">${sec.title}</h3>${content}`;
-    }).join('');
-
-    /* Цена */
-    const priceHTML = `
-      <p class="stay-modal__price">
-        <strong>${fmt(item.priceDay)} ₽</strong> / ${item.unit}
-      </p>`;
-
-    /* Кнопка «Заказать» */
-    const orderHTML = `
-      <div class="stay-modal__actions">
-        <button class="btn btn--primary" type="button" data-order="${item.id}">
-          Заказать
-        </button>
-      </div>`;
-
-    bodyEl.innerHTML = `
-      ${gallery}
-      ${fullDesc}
-      ${detailsHTML}
-      ${priceHTML}
-      ${orderHTML}
-    `;
-
-    if (window.bootstrap && window.bootstrap.Modal) {
-      window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
-    } else {
-      modalEl.classList.add('is-open');
-      modalEl.hidden = false;
-    }
-  }
 
   listEl.addEventListener('click', (e) => {
-    /* Игнорируем клики по кнопкам внутри карточки */
     if (e.target.closest('[data-order], [data-view-toggle], .card-toggle')) return;
-
     const card = e.target.closest('.catalog-card');
     if (!card) return;
-
-    const item = conf.items.find(i => i.id === card.dataset.id);
-    if (item) openDetails(item);
+    const id = card.dataset.id;
+    if (id) location.href = `item.html?id=${encodeURIComponent(id)}`;
   });
 
-  /* Клавиатура: Enter/Space на карточке = открыть «Подробнее» */
   listEl.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     if (e.target.closest('[data-order], [data-view-toggle], .card-toggle')) return;
-
     const card = e.target.closest('.catalog-card');
     if (!card) return;
-
     e.preventDefault();
-    const item = conf.items.find(i => i.id === card.dataset.id);
-    if (item) openDetails(item);
+    const id = card.dataset.id;
+    if (id) location.href = `item.html?id=${encodeURIComponent(id)}`;
   });
 
   /* =========================================================
