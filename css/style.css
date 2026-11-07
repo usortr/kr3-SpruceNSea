@@ -2768,3 +2768,107 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- 20.x Предупреждения capacity ---------- */
+.order-modal__warning {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #8a2f2f;
+  background: rgba(180, 60, 60, .10);
+  border: 1px solid rgba(180, 60, 60, .30);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+.order-modal__warning[hidden] { display: none; }
+
+.order-modal__actions .btn[disabled] {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+.order-modal__actions .btn[disabled]:hover { transform: none; }
+
+/* ---------- 20.y Календарь в модалке ---------- */
+.order-modal__calendar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.order-modal__calendar .cal {
+  flex: none;
+  padding: 10px;
+}
+
+.order-modal__selected {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--clr-dark);
+  font-weight: 500;
+}
+
+.order-modal__calendar .cal__cell {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: var(--clr-catalog-text);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background var(--transition), color var(--transition);
+}
+.order-modal__calendar .cal__cell--free { background: rgba(40, 79, 68, .06); }
+.order-modal__calendar .cal__cell--free:hover { background: rgba(40, 79, 68, .16); }
+
+/* Прошедшие — disabled */
+.order-modal__calendar .cal__cell--past {
+  color: var(--clr-catalog-line);
+  background: transparent;
+  cursor: not-allowed;
+}
+
+.order-modal__calendar .cal__cell--today {
+  outline: 2px solid var(--clr-catalog-accent);
+  outline-offset: -2px;
+}
+
+/* Диапазон */
+.order-modal__calendar .cal__cell--in-range {
+  background: rgba(40, 79, 68, .14);
+  color: var(--clr-catalog-accent);
+  text-decoration: none;
+}
+.order-modal__calendar .cal__cell--selected {
+  background: var(--clr-catalog-accent);
+  color: #fff;
+  text-decoration: none;
+}
+.order-modal__calendar .cal__cell--range-start { border-radius: 50% 0 0 50%; }
+.order-modal__calendar .cal__cell--range-end   { border-radius: 0 50% 50% 0; }
+.order-modal__calendar .cal__cell--range-start.cal__cell--range-end { border-radius: 50%; }
+
+.order-modal__calendar .cal__nav[disabled] {
+  opacity: .4;
+  cursor: not-allowed;
+}
+.order-modal__calendar .cal__nav[disabled]:hover {
+  background: var(--clr-catalog-surface);
+  border-color: var(--clr-catalog-line);
+  color: var(--clr-catalog-text);
+}
+
+/* booked всегда важнее range — специфичность выше одиночных классов */
+.order-modal__calendar .cal__cell.cal__cell--booked {
+  background: rgba(180, 60, 60, .12);
+  color: #b43c3c;
+  text-decoration: line-through;
+  cursor: pointer;
+}
+.order-modal__calendar .cal__cell.cal__cell--booked:hover {
+  background: rgba(180, 60, 60, .2);
+}
+
+@media (max-width: 575.98px) {
+  .order-modal__calendar { grid-template-columns: 1fr; }
+}

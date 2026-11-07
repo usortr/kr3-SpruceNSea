@@ -1,6 +1,8 @@
 /* =========================================================
    Spruce & Sea — модалка заказа
    Работает на catalog.html и item.html
+   Без strong-опций (комбо). Без чекбокса «С питомцем» в «Гостях» —
+   питомец выбирается только через weak-опцию pet-fee в «Дополнительно».
    ========================================================= */
 (function () {
   'use strict';
@@ -17,6 +19,12 @@
   let state = null;
   let modalEl = null;
   let bsModal = null;
+
+  const MONTHS = ['январь','февраль','март','апрель','май','июнь',
+                  'июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+  const WEEKDAYS = ['пн','вт','ср','чт','пт','сб','вс'];
+  const MONTHS_SHORT = ['янв.','февр.','мар.','апр.','мая','июн.',
+                        'июл.','авг.','сент.','окт.','нояб.','дек.'];
 
   const fmt = n => Number(n).toLocaleString('ru-RU');
 
@@ -68,14 +76,23 @@
 
     state = {
       checkin, checkout,
-      adults: 1, kids: 0, pets: false,
+      adults: 1, kids: 0,
       weakIds: [],
-      strongIds: [],
+      viewYear: today.getFullYear(),
+      viewMonth: today.getMonth(),
+      selecting: null,
+      bookedSet: (window.SS_AVAILABILITY
+        ? window.SS_AVAILABILITY.getBooked(item.id)
+        : new Set()),
     };
 
     modalEl.querySelector('[data-order-title]').textContent = item.title;
     renderBody();
     renderTotal();
+    updateSubmitState();
+
+    const bodyEl = modalEl.querySelector('.modal-body');
+    if (bodyEl) bodyEl.scrollTop = 0;
 
     if (!bsModal && window.bootstrap && window.bootstrap.Modal) {
       bsModal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -89,26 +106,18 @@
     const bodyEl = modalEl.querySelector('[data-order-body]');
     const isStay = item.category === 'stays';
     const capacity = item.capacity || 10;
-    const hasPets = (item.filterTags || []).includes('pets');
 
-    /* Даты */
+    /* Календарь */
     const datesHTML = `
       <fieldset class="order-modal__group">
         <legend class="order-modal__legend">Период</legend>
-        <div class="order-modal__dates">
-          <label>Заезд
-            <input type="date" name="checkin" value="${state.checkin}"
-                   min="${toISO(new Date())}" data-order-checkin>
-          </label>
-          <label>Выезд
-            <input type="date" name="checkout" value="${state.checkout}"
-                   min="${state.checkin}" data-order-checkout>
-          </label>
-        </div>
+        <div class="order-modal__calendar" data-order-calendar></div>
+        <p class="order-modal__selected" data-order-selected></p>
         <p class="order-modal__hint" data-order-nights></p>
+        <p class="order-modal__warning" data-order-cal-warning hidden></p>
       </fieldset>`;
 
-    /* Гости + питомцы — только жильё */
+    /* Гости — БЕЗ чекбокса «С питомцем» */
     const guestsHTML = isStay ? `
       <fieldset class="order-modal__group">
         <legend class="order-modal__legend">Гости</legend>
@@ -124,15 +133,11 @@
           <span class="order-modal__qty" data-order-value="kids">${state.kids}</span>
           <button type="button" class="order-modal__qty-btn" data-order-counter="kids" data-dir="1" aria-label="Больше">+</button>
         </div>
-        ${hasPets ? `
-          <label class="order-modal__checkbox">
-            <input type="checkbox" data-order-pets ${state.pets ? 'checked' : ''}>
-            <span>С питомцем</span>
-          </label>` : ''}
         <p class="order-modal__hint">До ${capacity} гостей</p>
+        <p class="order-modal__warning" data-order-warning hidden></p>
       </fieldset>` : '';
 
-    /* Слабые опции */
+    /* Слабые опции (pet-fee — обычная галочка здесь) */
     const weak = item.weakOptions || [];
     const weakHTML = weak.length ? `
       <fieldset class="order-modal__group">
@@ -145,59 +150,187 @@
           </label>`).join('')}
       </fieldset>` : '';
 
-    /* Сильные опции */
-    const strong = item.strongOptions || [];
-    const strongHTML = strong.length ? `
-      <fieldset class="order-modal__group">
-        <legend class="order-modal__legend">Добавить к брони</legend>
-        ${strong.map(s => {
-          const sub = pricing.findItem(s.id);
-          if (!sub) return '';
-          const pct = pricing.calcStrongDiscount(item, s.id);
-          const discNote = pct ? ` <span class="order-modal__disc">−${pct}%</span>` : '';
-          return `
-            <label class="order-modal__checkbox">
-              <input type="checkbox" value="${s.id}" data-order-strong
-                     ${state.strongIds.includes(s.id) ? 'checked' : ''}>
-              <span>${sub.title} — ${fmt(sub.priceDay)} ₽/${sub.unit || 'сутки'}${discNote}</span>
-            </label>`;
-        }).join('')}
-      </fieldset>` : '';
+    bodyEl.innerHTML = datesHTML + guestsHTML + weakHTML;
 
-    bodyEl.innerHTML = datesHTML + guestsHTML + weakHTML + strongHTML;
-
+    renderCalendar();
     updateNightsHint();
+    updateCapacityWarning();
+  }
+
+  /* ---------- Календарь ---------- */
+  function renderCalendar() {
+    const wrap = modalEl.querySelector('[data-order-calendar]');
+    if (!wrap) return;
+
+    const y = state.viewYear;
+    const m = state.viewMonth;
+    const next = nextMonth(y, m);
+
+    wrap.innerHTML =
+      renderOrderMonth(y, m) +
+      renderOrderMonth(next.year, next.month);
+
+    updateSelectedHint();
+  }
+
+  function nextMonth(year, month) {
+    let m = month + 1, y = year;
+    if (m > 11) { m = 0; y += 1; }
+    return { year: y, month: m };
+  }
+
+  function renderOrderMonth(year, month) {
+    const today = new Date();
+    const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const first = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const offset = (first.getDay() + 6) % 7;
+
+    const prevDisabled = (year < today.getFullYear())
+      || (year === today.getFullYear() && month <= today.getMonth());
+
+    const cells = [];
+    for (let i = 0; i < offset; i++) {
+      cells.push('<span class="cal__cell cal__cell--empty" aria-hidden="true"></span>');
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d);
+      const iso = toISO(date);
+
+      const isPast = date < todayMidnight;
+      const isToday = date.getTime() === todayMidnight.getTime();
+      const isBooked = state.bookedSet.has(iso);
+
+      /* range-подсветка — только для свободных непрошедших дат */
+      const canBeRange = !isPast && !isBooked;
+      const isCheckin  = canBeRange && iso === state.checkin;
+      const isCheckout = canBeRange && iso === state.checkout;
+      const inRange    = canBeRange && state.checkin && state.checkout
+        && iso > state.checkin && iso < state.checkout;
+      const isSelected = isCheckin || isCheckout;
+
+      const mods = [
+        'cal__cell',
+        isPast ? 'cal__cell--past' : '',
+        isToday ? 'cal__cell--today' : '',
+        isBooked ? 'cal__cell--booked' : '',
+        canBeRange ? 'cal__cell--free' : '',
+        isSelected ? 'cal__cell--selected' : '',
+        isCheckin ? 'cal__cell--range-start' : '',
+        isCheckout ? 'cal__cell--range-end' : '',
+        inRange ? 'cal__cell--in-range' : '',
+      ].filter(Boolean).join(' ');
+
+      const label = isBooked
+        ? `${d} — занято`
+        : (isPast ? `${d} — прошедший` : `${d} — свободно`);
+
+      if (isPast) {
+        cells.push(`<button type="button" class="${mods}" disabled aria-disabled="true" title="${label}">${d}</button>`);
+      } else {
+        const bookedAttr = isBooked ? ' data-booked="1"' : '';
+        cells.push(`<button type="button" class="${mods}" data-order-day="${iso}"${bookedAttr} title="${label}">${d}</button>`);
+      }
+    }
+
+    return `
+      <div class="cal" data-order-cal-month="${year}-${month}">
+        <div class="cal__head">
+          <button type="button" class="cal__nav" data-order-cal-prev ${prevDisabled ? 'disabled' : ''} aria-label="Предыдущий месяц">‹</button>
+          <span class="cal__title">${MONTHS[month]} ${year}</span>
+          <button type="button" class="cal__nav" data-order-cal-next aria-label="Следующий месяц">›</button>
+        </div>
+        <div class="cal__weekdays">
+          ${WEEKDAYS.map(d => `<span class="cal__weekday">${d}</span>`).join('')}
+        </div>
+        <div class="cal__grid">${cells.join('')}</div>
+      </div>`;
+  }
+
+    /* true — весь диапазон свободен: и концы, и внутренность */
+    /* true — весь диапазон свободен: и концы, и внутренность */
+  function isRangeFree(checkin, checkout) {
+    if (!checkin || !checkout) return false;
+    if (checkout <= checkin) return false;
+    if (state.bookedSet.has(checkin)) return false;
+    if (state.bookedSet.has(checkout)) return false;
+    const a = new Date(checkin + 'T00:00:00');
+    const b = new Date(checkout + 'T00:00:00');
+    for (let t = a.getTime() + 86400000; t < b.getTime(); t += 86400000) {
+      const iso = toISO(new Date(t));
+      if (state.bookedSet.has(iso)) return false;
+    }
+    return true;
+  }
+
+  function updateSelectedHint() {
+    const el = modalEl.querySelector('[data-order-selected]');
+    if (!el) return;
+
+    if (!state.checkin || !state.checkout || state.checkout <= state.checkin) {
+      el.textContent = state.selecting === 'checkout'
+        ? 'Выберите дату выезда'
+        : 'Выберите дату заезда';
+      return;
+    }
+    el.textContent = `Заезд ${formatDateShort(state.checkin)} — выезд ${formatDateShort(state.checkout)}`;
+  }
+
+  function formatDateShort(iso) {
+    if (!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
+    return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
   }
 
   /* ---------- Пересчёт итога ---------- */
   function renderTotal() {
     const item = currentItem;
-    const result = pricing.calcOrder(item, state);
+    const result = pricing.calcOrder(item, { ...state, strongIds: [] });
+
     const totalEl = modalEl.querySelector('[data-order-total]');
     if (totalEl) totalEl.textContent = fmt(result.total) + ' ₽';
 
-    /* Разбивка в теле — добавим под низ */
     const summaryEl = modalEl.querySelector('[data-order-summary]');
-    if (!summaryEl) return;
+    if (!summaryEl) return result;
 
     const rows = [];
     rows.push(`<div class="order-modal__row"><span>${item.title} × ${result.nights} ${plural(result.nights)}</span><span>${fmt(result.baseTotal)} ₽</span></div>`);
     if (result.stayDiscount > 0) {
       rows.push(`<div class="order-modal__row order-modal__row--disc"><span>Скидка за ${result.nights} ${plural(result.nights)} (${result.stayDiscountPercent}%)</span><span>−${fmt(result.stayDiscount)} ₽</span></div>`);
     }
-    result.strongList.forEach(s => {
-      rows.push(`<div class="order-modal__row"><span>${s.title} × ${s.nights} ${plural(s.nights)}</span><span>${fmt(s.baseTotal)} ₽</span></div>`);
-      if (s.discount > 0) {
-        rows.push(`<div class="order-modal__row order-modal__row--disc"><span>Скидка за комплект (${s.discountPercent}%)</span><span>−${fmt(s.discount)} ₽</span></div>`);
-      }
-    });
     result.weakList.forEach(w => {
       rows.push(`<div class="order-modal__row"><span>${w.title}${w.qty > 1 ? ' × ' + w.qty : ''}</span><span>${fmt(w.total)} ₽</span></div>`);
     });
 
     summaryEl.innerHTML = `<div class="order-modal__summary-list">${rows.join('')}</div>`;
-
     return result;
+  }
+
+  /* ---------- Capacity warning (только показ) ---------- */
+  function updateCapacityWarning() {
+    if (!currentItem || currentItem.category !== 'stays') return;
+    const cap = currentItem.capacity || 10;
+    const total = state.adults + state.kids;
+    const warnEl = modalEl.querySelector('[data-order-warning]');
+    if (!warnEl) return;
+
+    if (total > cap) {
+      warnEl.hidden = false;
+      warnEl.textContent = `Гостей больше, чем мест: ${total} из ${cap}. Мы свяжемся с вами, чтобы обсудить размещение.`;
+    } else {
+      warnEl.hidden = true;
+      warnEl.textContent = '';
+    }
+  }
+    /* Кнопка «Добавить в заказ» — disabled, если диапазон невалиден */
+  function updateSubmitState() {
+    const btn = modalEl.querySelector('[data-order-submit]');
+    if (!btn) return;
+    const valid = state.checkin && state.checkout
+      && state.checkout > state.checkin
+      && isRangeFree(state.checkin, state.checkout);
+    btn.disabled = !valid;
   }
 
   /* ---------- Вспомогательные ---------- */
@@ -222,13 +355,53 @@
     const n = pricing.nightsBetween(state.checkin, state.checkout);
     const hint = modalEl.querySelector('[data-order-nights]');
     if (hint) hint.textContent = n > 0 ? `${n} ${plural(n)}` : 'Выберите даты';
-    const outEl = modalEl.querySelector('[data-order-checkout]');
-    if (outEl) outEl.min = state.checkin;
+  }
+
+  /* ---------- Клик по дню ---------- */
+  function handleDayClick(iso, isBooked) {
+    const calWarn = modalEl.querySelector('[data-order-cal-warning]');
+    const setWarn = (msg) => {
+      if (!calWarn) return;
+      if (msg) { calWarn.hidden = false; calWarn.textContent = msg; }
+      else { calWarn.hidden = true; calWarn.textContent = ''; }
+    };
+
+    if (isBooked) {
+      setWarn('Эта дата занята. Выберите другую.');
+      return;
+    }
+
+    /* Новый диапазон */
+    if (state.selecting !== 'checkout' || iso <= state.checkin) {
+      state.checkin = iso;
+      state.checkout = iso;
+      state.selecting = 'checkout';
+      setWarn('');
+      renderCalendar();
+      updateNightsHint();
+      updateSubmitState();
+      renderTotal();
+      return;
+    }
+
+    /* Завершение диапазона */
+    state.checkout = iso;
+    state.selecting = null;
+
+    if (!isRangeFree(state.checkin, iso)) {
+      setWarn('В выбранном периоде есть занятые даты. Выберите другие даты.');
+    } else {
+      setWarn('');
+    }
+
+    renderCalendar();
+    updateNightsHint();
+    updateSubmitState();
+    renderTotal();
   }
 
   /* ---------- События ---------- */
   document.addEventListener('click', (e) => {
-    /* Открытие модалки */
     const trigger = e.target.closest('[data-order]');
     if (trigger) {
       e.preventDefault();
@@ -240,72 +413,56 @@
 
     if (!modalEl || !currentItem) return;
 
-    /* Даты */
-    const checkinEl = e.target.closest('[data-order-checkin]');
-    const checkoutEl = e.target.closest('[data-order-checkout]');
-    if (checkinEl || checkoutEl) return;
+    const calPrev = e.target.closest('[data-order-cal-prev]');
+    const calNext = e.target.closest('[data-order-cal-next]');
+    if (calPrev || calNext) {
+      e.preventDefault();
+      if (calPrev && calPrev.disabled) return;
+      const d = calPrev ? -1 : 1;
+      let m = state.viewMonth + d;
+      let y = state.viewYear;
+      if (m < 0) { m = 11; y -= 1; }
+      if (m > 11) { m = 0; y += 1; }
+      state.viewYear = y;
+      state.viewMonth = m;
+      renderCalendar();
+      return;
+    }
 
-    /* Счётчики гостей */
+    const dayBtn = e.target.closest('[data-order-day]');
+    if (dayBtn) {
+      e.preventDefault();
+      handleDayClick(dayBtn.dataset.orderDay, dayBtn.dataset.booked === '1');
+      return;
+    }
+
     const counter = e.target.closest('[data-order-counter]');
     if (counter) {
       const key = counter.dataset.orderCounter;
       const dir = Number(counter.dataset.dir);
       if (key === 'adults' || key === 'kids') {
         const min = key === 'adults' ? 1 : 0;
-        const max = currentItem.capacity || 10;
+        const max = 20;
         let val = state[key] + dir;
         val = Math.max(min, Math.min(max, val));
         state[key] = val;
         const valueEl = modalEl.querySelector(`[data-order-value="${key}"]`);
         if (valueEl) valueEl.textContent = String(val);
+        updateCapacityWarning();
         renderTotal();
       }
       return;
     }
 
-    /* Submit */
     const submit = e.target.closest('[data-order-submit]');
-    if (submit) {
-      submitOrder();
-    }
+    if (submit) submitOrder();
   });
 
-  /* Изменения в форме */
-  document.addEventListener('input', (e) => {
-    if (!modalEl || !currentItem) return;
-
-    if (e.target.matches('[data-order-checkin]')) {
-      state.checkin = e.target.value;
-      if (state.checkout <= state.checkin) {
-        state.checkout = toISO(addDays(new Date(state.checkin + 'T00:00:00'), 1));
-        const out = modalEl.querySelector('[data-order-checkout]');
-        if (out) out.value = state.checkout;
-      }
-      updateNightsHint();
-      renderTotal();
-    }
-    if (e.target.matches('[data-order-checkout]')) {
-      state.checkout = e.target.value;
-      updateNightsHint();
-      renderTotal();
-    }
-  });
-
+  /* ---------- Изменения в форме ---------- */
   document.addEventListener('change', (e) => {
     if (!modalEl || !currentItem) return;
 
-    if (e.target.matches('[data-order-pets]')) {
-      state.pets = e.target.checked;
-      /* Автоматически ставим/снимаем pet-fee */
-      const petOpt = (currentItem.weakOptions || []).find(o => o.id === 'pet-fee');
-      if (petOpt) {
-        if (state.pets && !state.weakIds.includes('pet-fee')) state.weakIds.push('pet-fee');
-        if (!state.pets) state.weakIds = state.weakIds.filter(id => id !== 'pet-fee');
-        const cb = modalEl.querySelector(`[data-order-weak][value="pet-fee"]`);
-        if (cb) cb.checked = state.pets;
-      }
-      renderTotal();
-    }
+    /* Ветка [data-order-pets] удалена */
 
     if (e.target.matches('[data-order-weak]')) {
       const id = e.target.value;
@@ -313,23 +470,31 @@
       if (!e.target.checked) state.weakIds = state.weakIds.filter(x => x !== id);
       renderTotal();
     }
-
-    if (e.target.matches('[data-order-strong]')) {
-      const id = e.target.value;
-      if (e.target.checked && !state.strongIds.includes(id)) state.strongIds.push(id);
-      if (!e.target.checked) state.strongIds = state.strongIds.filter(x => x !== id);
-      renderTotal();
-    }
   });
 
-  /* Отправка в корзину */
+  /* ---------- Отправка в корзину ---------- */
   function submitOrder() {
     if (!currentItem) return;
-    const result = pricing.calcOrder(currentItem, state);
+
+    if (!state.checkin || !state.checkout || state.checkout <= state.checkin) {
+      alert('Выберите даты заезда и выезда');
+      return;
+    }
+
+    /* Новое: блокируем, если в диапазоне (включая концы) есть занятые */
+    if (!isRangeFree(state.checkin, state.checkout)) {
+      alert('В выбранном периоде есть занятые даты. Выберите другие даты.');
+      return;
+    }
+
+    const result = pricing.calcOrder(currentItem, { ...state, strongIds: [] });
     if (result.nights <= 0) {
       alert('Выберите корректные даты');
       return;
     }
+
+    const cap = currentItem.capacity || 10;
+    const guestsTotal = state.adults + state.kids;
 
     const order = {
       itemId: currentItem.id,
@@ -342,17 +507,19 @@
       checkout: state.checkout,
       nights: result.nights,
       guests: { adults: state.adults, kids: state.kids },
-      pets: state.pets,
+      /* pets больше не отдельное поле — pet-fee приходит из weakOptions */
       weakOptions: result.weakList.map(w => ({
         id: w.id, title: w.title, price: w.price, unit: w.unit,
         perGuest: !!w.perGuest, qty: w.qty, total: w.total,
       })),
-      strongOptions: result.strongList,
+      strongOptions: [],
+      capacity: currentItem.category === 'stays' ? cap : null,
+      capacityWarning: currentItem.category === 'stays' && guestsTotal > cap,
       baseTotal: result.baseTotal,
       stayDiscountPercent: result.stayDiscountPercent,
       stayDiscount: result.stayDiscount,
       weakTotal: result.weakTotal,
-      strongTotal: result.strongTotal,
+      strongTotal: 0,
       total: result.total,
       createdAt: new Date().toISOString(),
     };
@@ -362,7 +529,6 @@
     if (bsModal) bsModal.hide();
     else modalEl.style.display = 'none';
 
-    /* Опционально: открыть корзину */
     const toggle = document.querySelector('[data-cart-toggle]');
     if (toggle) toggle.click();
   }

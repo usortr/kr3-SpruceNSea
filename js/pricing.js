@@ -31,39 +31,45 @@ window.SS_PRICING = (function () {
     return r ? r.percent : 0;
   }
 
-  /* Слабая опция: цена × qty */
+  /* Слабая опция: цена × qty
+     qty:
+       perGuest && unit === 'сутки' → nights × guests (за гостя в сутки)
+       perGuest                     → guests            (за гостя, разово)
+       unit === 'сутки'             → nights            (за номер в сутки)
+       иначе                        → 1                 (разово)
+  */
   function calcWeak(opt, { nights, adults, kids }) {
     const guests = (adults || 0) + (kids || 0);
+    const n = Math.max(nights, 1);
+    const g = Math.max(guests, 1);
+
     let qty = 1;
-    if (opt.perGuest) qty = Math.max(guests, 1);
-    else if (opt.unit === 'сутки') qty = Math.max(nights, 1);
+    if (opt.perGuest && opt.unit === 'сутки') qty = n * g;
+    else if (opt.perGuest) qty = g;
+    else if (opt.unit === 'сутки') qty = n;
 
     const total = opt.price * qty;
     return { ...opt, qty, total };
   }
 
   /* Полный расчёт заказа */
+    /* Полный расчёт заказа */
   function calcOrder(item, params) {
-    const { checkin, checkout, adults = 1, kids = 0, pets = false, weakIds = [], strongIds = [] } = params;
+    const { checkin, checkout, adults = 1, kids = 0, weakIds = [], strongIds = [] } = params;
     const nights = nightsBetween(checkin, checkout);
 
     /* Базовая цена позиции */
     const baseTotal = item.priceDay * nights;
     const stayDisc = calcStayDiscount(item, nights);
 
-    /* Слабые опции */
+    /* Слабые опции — pet-fee теперь обычная опция, без фильтра по pets */
     const weakList = (item.weakOptions || [])
       .filter(o => weakIds.includes(o.id))
-      .map(o => {
-        /* Питомец — отдельная надбавка, если отмечен */
-        if (o.id === 'pet-fee' && !pets) return null;
-        return calcWeak(o, { nights, adults, kids });
-      })
-      .filter(Boolean);
+      .map(o => calcWeak(o, { nights, adults, kids }));
 
     const weakTotal = weakList.reduce((s, o) => s + o.total, 0);
 
-    /* Сильные опции */
+    /* Сильные опции — блок сохранён, но модалка передаёт strongIds: [] */
     const strongList = (item.strongOptions || [])
       .filter(s => strongIds.includes(s.id))
       .map(s => {
