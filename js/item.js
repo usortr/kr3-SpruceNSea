@@ -196,11 +196,17 @@
                   return acc || (c.items && c.items.find(i => i.id === s.id));
                 }, null);
                 if (!sub) return '';
+                const pct = window.SS_PRICING
+                  ? window.SS_PRICING.calcStrongDiscount(item, s.id)
+                  : 0;
+                const discNote = pct
+                  ? ` <span class="item-options__disc">−${pct}%</span>`
+                  : '';
                 return `
                   <li class="item-options__item">
-                    <a href="item.html?id=${sub.id}" class="item-options__link">
-                      ${sub.title} — ${fmt(sub.priceDay)} ₽/${sub.unit || 'сутки'}
-                    </a>
+                    <span>${sub.title} — ${fmt(sub.priceDay)} ₽/${sub.unit || 'сутки'}${discNote}</span>
+                    <button type="button" class="btn btn--small btn--ghost"
+                            data-order="${sub.id}">Заказать</button>
                   </li>`;
               }).join('')}
             </ul>
@@ -209,6 +215,13 @@
 
       optionsEl.innerHTML = html;
     }
+  }
+
+  /* ---------- 9. Кнопка «Заказать» — открывает модалку заказа ---------- */
+  const orderBtn = contentEl.querySelector('[data-item-order]');
+  if (orderBtn) {
+    orderBtn.dataset.order = item.id;
+    orderBtn.type = 'button';
   }
 
   const backBtn = contentEl.querySelector('[data-item-back]');

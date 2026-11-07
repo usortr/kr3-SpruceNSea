@@ -428,9 +428,20 @@ button:focus-visible {
 .btn:active { transform: translateY(0); }
 
 .btn--primary { background: var(--clr-accent); color: var(--clr-hero-text); }
-.btn--primary:hover { background: var(--clr-accent-strong); }
+.btn--primary:hover { background: var(--clr-accent-strong); color: var(--clr-hero-text); }
 
 .btn--small { padding: 10px 20px; font-size: 14px; }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--clr-accent);
+  border-color: var(--clr-line);
+}
+.btn--ghost:hover {
+  background: var(--clr-accent);
+  color: var(--clr-hero-text);
+  border-color: var(--clr-accent);
+}
 
 /* ---------- 6. Section head ---------- */
 .section-head { margin-bottom: 44px; }
