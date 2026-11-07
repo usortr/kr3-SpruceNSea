@@ -129,8 +129,17 @@
   });
   applyFilters();
 
-  /* ---------- 5. Счётчик порций ---------- */
-  const qty = {};   /* { id: number } */
+  /* ---------- 5. Счётчик порций + корзина ---------- */
+  const qty = {};   /* { id: number } — локальное состояние для UI */
+
+  function syncFromCart() {
+    data.items.forEach(item => {
+      const line = window.SS_CART
+        ? window.SS_CART.findRestaurantLine(item.id)
+        : null;
+      qty[item.id] = line ? (line.qty || 1) : 0;
+    });
+  }
 
   function updateCounter(id) {
     const wrap = listEl.querySelector(`[data-counter="${id}"]`);
@@ -145,8 +154,49 @@
       orderBtn.hidden = inCart;
       wrap.hidden = !inCart;
     }
-    /* Перерисовываем бейдж корзины */
-    document.dispatchEvent(new CustomEvent('cart:update'));
+  }
+
+  /* Добавить одну порцию в корзину (создать строку или qty++) */
+  function addOne(item) {
+    const line = window.SS_CART.findRestaurantLine(item.id);
+    if (!line) {
+      window.SS_CART.add({
+        itemId: item.id,
+        category: 'restaurant',
+        title: item.title,
+        image: item.image,
+        unit: 'шт',
+        priceDay: item.price,
+        qty: 1,
+        total: item.price,
+        createdAt: new Date().toISOString(),
+      });
+    } else {
+      const newQty = (line.qty || 1) + 1;
+      window.SS_CART.updateLine(line.id, {
+        qty: newQty,
+        total: item.price * newQty,
+      });
+    }
+    syncFromCart();
+    updateCounter(item.id);
+  }
+
+  /* Убрать одну порцию: qty--, при 0 — удалить строку */
+  function removeOne(item) {
+    const line = window.SS_CART.findRestaurantLine(item.id);
+    if (!line) return;
+    const newQty = (line.qty || 1) - 1;
+    if (newQty <= 0) {
+      window.SS_CART.remove(line.id);
+    } else {
+      window.SS_CART.updateLine(line.id, {
+        qty: newQty,
+        total: item.price * newQty,
+      });
+    }
+    syncFromCart();
+    updateCounter(item.id);
   }
 
   listEl.addEventListener('click', (e) => {
@@ -154,39 +204,30 @@
     const dec = e.target.closest('[data-qty-dec]');
     const order = e.target.closest('[data-order]');
 
-    if (inc) {
-      const id = inc.closest('[data-counter]').dataset.counter;
-      qty[id] = (qty[id] || 0) + 1;
-      updateCounter(id);
+    if (inc || order) {
+      const wrap = (inc || order).closest('[data-counter]')
+        || order.closest('.restaurant-card');
+      const id = inc
+        ? inc.closest('[data-counter]').dataset.counter
+        : order.dataset.order;
+      const item = data.items.find(i => i.id === id);
+      if (item) addOne(item);
     }
     if (dec) {
       const id = dec.closest('[data-counter]').dataset.counter;
-      qty[id] = Math.max(0, (qty[id] || 0) - 1);
-      updateCounter(id);
-    }
-    if (order) {
-      const id = order.dataset.order;
-      qty[id] = (qty[id] || 0) + 1;
-      updateCounter(id);
+      const item = data.items.find(i => i.id === id);
+      if (item) removeOne(item);
     }
   });
 
-  /* Скрываем все счётчики и показываем кнопки при старте */
+  /* ---------- 6. Инициализация из корзины ---------- */
+  syncFromCart();
   data.items.forEach(i => updateCounter(i.id));
 
-  /* ---------- 6. Сохранение в localStorage (для будущей корзины) ---------- */
+  /* Обновление при изменении корзины (например, удалили строку из drawer) */
   document.addEventListener('cart:update', () => {
-    const items = Object.entries(qty)
-      .filter(([, n]) => n > 0)
-      .map(([id, n]) => {
-        const item = data.items.find(i => i.id === id);
-        return item ? { id, title: item.title, price: item.price, qty: n } : null;
-      })
-      .filter(Boolean);
-
-    try {
-      localStorage.setItem('ss-restaurant-order', JSON.stringify(items));
-    } catch {}
+    syncFromCart();
+    data.items.forEach(i => updateCounter(i.id));
   });
 
 })();
