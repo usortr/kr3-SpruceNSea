@@ -21,9 +21,16 @@
     index:      'index.html',
   };
 
+  // Какие страницы НЕ должны получать авто-подсветку:
+  //  - item.html: подсветку выставит item.js через window.setActiveNav
+  //  - checkout.html / privacy.html и т.п.: просто ничего не подсвечиваем
+  const NO_AUTO_ACTIVE = ['item.html', 'checkout.html', 'privacy.html'];
+
   let target = null;
 
-  if (page === 'catalog.html') {
+  if (NO_AUTO_ACTIVE.includes(page)) {
+    target = null;
+  } else if (page === 'catalog.html') {
     target = map[type] || map.stays;
   } else if (page === 'restaurant.html') {
     target = map.restaurant;
@@ -36,7 +43,7 @@
   links.forEach(link => {
     link.classList.toggle(
       'site-nav__link--active',
-      link.getAttribute('href') === target
+      target !== null && link.getAttribute('href') === target
     );
   });
 })();
@@ -86,12 +93,12 @@
   const links = Array.from(list.querySelectorAll('.site-nav__link'));
   if (!links.length) return;
 
-  // Активный пункт — тот, у которого класс --active
-  const activeLink = links.find(l => l.classList.contains('site-nav__link--active'))
-                     || links[0];
+  // Активный пункт — тот, у которого класс --active.
+  // Если активного нет — НЕ подставляем links[0], линия просто скрыта.
+  let activeLink = links.find(l => l.classList.contains('site-nav__link--active')) || null;
 
   // На мобильных линия скрыта через CSS — тогда не трогаем
-    const isDesktop = () => window.matchMedia('(min-width: 1181px)').matches;
+  const isDesktop = () => window.matchMedia('(min-width: 1181px)').matches;
 
   // Измеряем позицию пункта относительно списка
   const measure = (link) => {
@@ -117,11 +124,13 @@
     underline.classList.remove('site-nav__underline--visible');
   };
 
-  // Инициализация: ставим линию под активный пункт
+  // Инициализация: ставим линию под активный пункт (или прячем)
   const init = () => {
     if (!isDesktop()) return;
-    // Небольшая задержка, чтобы шрифты и layout устоялись
-    requestAnimationFrame(() => moveTo(activeLink));
+    requestAnimationFrame(() => {
+      if (activeLink) moveTo(activeLink);
+      else hide();
+    });
   };
 
   // При наведении — линия едет к пункту
@@ -131,18 +140,20 @@
   });
 
   // Когда курсор уходит из меню — линия возвращается к активному пункту
-  list.addEventListener('mouseleave', () => moveTo(activeLink));
+  // (или прячется, если активного нет)
+  list.addEventListener('mouseleave', () => {
+    if (activeLink) moveTo(activeLink);
+    else hide();
+  });
 
   // При смене размера окна пересчитываем
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      if (isDesktop()) {
-        moveTo(activeLink);
-      } else {
-        hide();
-      }
+      if (!isDesktop()) { hide(); return; }
+      if (activeLink) moveTo(activeLink);
+      else hide();
     }, 100);
   });
 
@@ -153,6 +164,26 @@
     window.addEventListener('load', init);
   }
   init();
+
+  /* Публичный API: выставить активный пункт навигации по href (или null — снять).
+     Нужен для item.js и любых других страниц с динамическим контекстом. */
+  window.setActiveNav = function (href) {
+    links.forEach(link => {
+      link.classList.toggle(
+        'site-nav__link--active',
+        !!href && link.getAttribute('href') === href
+      );
+    });
+    activeLink = href
+      ? (links.find(l => l.getAttribute('href') === href) || null)
+      : null;
+
+    if (!isDesktop()) return;
+    requestAnimationFrame(() => {
+      if (activeLink) moveTo(activeLink);
+      else hide();
+    });
+  };
 })();
 
 /* ---------- 3. Корзина (drawer) ---------- */

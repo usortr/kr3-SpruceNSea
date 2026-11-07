@@ -46,11 +46,11 @@
   contentEl.hidden = false;
   document.title = `${item.title} — Spruce & Sea`;
 
-  /* ---------- 2. Хлебные крошки ---------- */
+    /* ---------- 2. Хлебные крошки ---------- */
   const crumbsMap = {
-    stays: { label: 'Номера & коттеджи', url: 'catalog.html?type=stays' },
-    spa:   { label: 'СПА & баня',       url: 'catalog.html?type=spa' },
-    bikes: { label: 'Велосипеды & сапы', url: 'catalog.html?type=bikes' },
+    stays: { label: 'Номера & коттеджи', url: 'catalog.html?type=stays', nav: 'catalog.html?type=stays' },
+    spa:   { label: 'СПА & баня',       url: 'catalog.html?type=spa',   nav: 'catalog.html?type=spa'   },
+    bikes: { label: 'Велосипеды & сапы', url: 'catalog.html?type=bikes', nav: 'catalog.html?type=bikes' },
   };
   const crumbs = crumbsMap[category];
   const crumbsEl = document.querySelector('[data-item-breadcrumbs]');
@@ -62,6 +62,12 @@
       <span class="item__breadcrumbs-sep">/</span>
       <span class="item__breadcrumbs-current">${item.title}</span>
     `;
+  }
+
+  /* Подсветка раздела навигации, к которому относится позиция.
+     Если категория неизвестна — снимаем подсветку (линия скрывается). */
+  if (typeof window.setActiveNav === 'function') {
+    window.setActiveNav(crumbs ? crumbs.nav : null);
   }
 
   /* ---------- 3. Галерея ---------- */
@@ -203,15 +209,6 @@
 
       optionsEl.innerHTML = html;
     }
-  }
-
-  /* ---------- 9. Кнопки ---------- */
-  const orderBtn = contentEl.querySelector('[data-item-order]');
-  if (orderBtn) {
-    orderBtn.addEventListener('click', () => {
-      console.log('[item] order:', item.id);
-      /* TODO: order-modal */
-    });
   }
 
   const backBtn = contentEl.querySelector('[data-item-back]');

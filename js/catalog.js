@@ -145,19 +145,53 @@
 
   listEl.innerHTML = conf.items.map(unified).join('');
 
-  /* Помечаем бейджи, которые переполнены, чтобы показать «…» */
-  listEl.querySelectorAll('.catalog-card__badges').forEach(el => {
-    el.classList.toggle('is-overflow', el.scrollHeight > el.clientHeight + 1);
-  });
+  /* =========================================================
+   Помечаем бейджи, которые переполнены, чтобы показать «…».
+   Дополнительно вешаем .is-last-visible на последний видимый <li>,
+   чтобы «…» вставало вплотную к последней капсуле второго ряда,
+   а не у правого края контейнера.
+   ========================================================= */
+  function updateBadgesOverflow(root) {
+    root.querySelectorAll('.catalog-card__badges').forEach(badges => {
+      // Сброс прошлой пометки
+      badges.classList.remove('is-overflow');
+      badges.querySelectorAll('.is-last-visible').forEach(li => {
+        li.classList.remove('is-last-visible');
+      });
 
+      // Есть ли переполнение по высоте?
+      const isOverflow = badges.scrollHeight > badges.clientHeight + 1;
+      if (!isOverflow) return;
+
+      // Ищем последний <li>, который реально виден внутри бейджей
+      const badgesRect = badges.getBoundingClientRect();
+      const items = Array.from(badges.children);
+      let lastVisible = null;
+
+      for (const li of items) {
+        const r = li.getBoundingClientRect();
+        if (r.bottom <= badgesRect.bottom + 1) {
+          lastVisible = li;
+        } else {
+          break; // дальше идут элементы, которые уже обрезаны
+        }
+      }
+
+      if (lastVisible) {
+        lastVisible.classList.add('is-last-visible');
+        badges.classList.add('is-overflow');
+      }
+    });
+  }
+
+  // Первичный вызов — после рендера карточек
+  updateBadgesOverflow(listEl);
+
+  // Пересчёт при ресайзе
   let resizeTimer;
   window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    listEl.querySelectorAll('.catalog-card__badges').forEach(el => {
-    el.classList.toggle('is-overflow', el.scrollHeight > el.clientHeight + 1);
-    });
-  }, 100);
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => updateBadgesOverflow(listEl), 100);
   });
 
   /* =========================================================
@@ -370,21 +404,4 @@
     const id = card.dataset.id;
     if (id) location.href = `item.html?id=${encodeURIComponent(id)}`;
   });
-
-  /* =========================================================
-     11. Кнопка «Заказать» — заглушка до order-modal.js
-     ========================================================= */
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-order]');
-    if (!btn) return;
-    e.preventDefault();
-    e.stopPropagation();
-
-    const id = btn.dataset.order;
-    console.log('[catalog] order:', id);
-
-    /* TODO: подключить order-modal.js */
-    /* window.SS_ORDER.open(id); */
-  });
-
 })();

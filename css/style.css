@@ -958,45 +958,77 @@ button:focus-visible {
   color: var(--clr-catalog-accent);
   text-transform: none;
 }
+/* =========================================================
+   Двойной ползунок цены
+   Полоска рисуется один раз на контейнере (.filter__range::before),
+   у инпутов треки прозрачные — перекрываться нечему.
+   ========================================================= */
+
+/* --- Контейнер --- */
 .filter__range {
   position: relative;
   height: 28px;
   margin-bottom: 12px;
 }
+
+/* Единственная видимая полоска-фон */
+.filter__range::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+  background: var(--clr-catalog-line);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Инпуты --- */
 .filter__range-input {
   position: absolute;
   left: 0;
   right: 0;
+  top: 0;
   width: 100%;
+  height: 28px;
   margin: 0;
-  pointer-events: none;
+  pointer-events: none;          /* клики ловит только thumb */
   background: transparent;
   -webkit-appearance: none;
   appearance: none;
-  height: 28px;
+  z-index: 1;
 }
+
+/* Треки полностью прозрачные — никакой двойной полоски */
 .filter__range-input::-webkit-slider-runnable-track {
   height: 4px;
-  background: var(--clr-catalog-line);
-  border-radius: 2px;
+  background: transparent;
+  border: none;
 }
 .filter__range-input::-moz-range-track {
   height: 4px;
-  background: var(--clr-catalog-line);
-  border-radius: 2px;
+  background: transparent;
+  border: none;
 }
+
+/* Thumb — единственный видимый интерактивный элемент */
 .filter__range-input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   pointer-events: auto;
   width: 18px;
   height: 18px;
-  margin-top: -7px;
+  margin-top: -7px;              /* центрируем над полоской 4px */
   border-radius: 50%;
   background: var(--clr-catalog-accent);
   border: 2px solid var(--clr-catalog-surface);
   box-shadow: 0 1px 4px rgba(24, 33, 28, .3);
   cursor: pointer;
+  position: relative;
+  z-index: 2;
 }
 .filter__range-input::-moz-range-thumb {
   pointer-events: auto;
@@ -1007,7 +1039,11 @@ button:focus-visible {
   border: 2px solid var(--clr-catalog-surface);
   box-shadow: 0 1px 4px rgba(24, 33, 28, .3);
   cursor: pointer;
+  position: relative;
+  z-index: 2;
 }
+
+/* --- Поля ввода цены --- */
 .filter__price-row {
   display: flex;
   gap: 10px;
@@ -1198,9 +1234,16 @@ button:focus-visible {
   flex-direction: column;
   gap: 4px;
 }
-.catalog-card__panel--info .catalog-card__text {
+.catalog-card__panel--info .catalog-card__info-main {
   flex: 1 1 auto;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.catalog-card__panel--info .catalog-card__text {
+  flex: 1 1 auto;
+  min-height: calc(1.5em * 2);       /* минимум 2 строки описания */
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
@@ -1210,48 +1253,66 @@ button:focus-visible {
 }
 .catalog-card__panel--info .catalog-card__badges {
   flex: 0 0 auto;
-  max-height: calc(1.4em * 2);
+  max-height: 58px;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 10px;
+  gap: 6px 8px;
   margin: 0;
-  padding: 0 20px 0 0;
+  padding: 0;                         /* было 0 32px 0 0 */
   overflow: hidden;
   position: relative;
   align-content: flex-start;
   list-style: none;
 }
+
+/* «…» справа — по умолчанию скрыто */
+/* «…» справа — по умолчанию скрыто */
+/* «…» — капсула сразу после последней видимой капсулы */
+/* «…» — капсула сразу после последней видимой капсулы.
+   Резерв справа задаётся на контейнере через .is-overflow,
+   а не через margin-right у li — иначе последняя капсула
+   выдавливается за overflow: hidden и обрезается. */
+.catalog-card__panel--info .catalog-card__badges.is-overflow {
+  padding-right: 32px;              /* место под капсулу «…» */
+}
+
+.catalog-card__panel--info .catalog-card__badges li.is-last-visible {
+  position: relative;
+}
+
 .catalog-card__panel--info .catalog-card__badges li {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 500;
   color: var(--clr-catalog-text);
   white-space: nowrap;
   flex: 0 0 auto;
-  line-height: 1.4;
+  line-height: 1.2;
+  /* капсула */
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(40, 79, 68, .07);
+  border: 1px solid rgba(40, 79, 68, .10);
 }
-/* «…» справа — по умолчанию скрыто */
-.catalog-card__panel--info .catalog-card__badges::after {
+
+.catalog-card__panel--info .catalog-card__badges li.is-last-visible::after {
   content: "…";
   position: absolute;
   top: 0;
-  right: 0;
-  bottom: 0;
-  width: 28px;
-  display: flex;
+  right: -30px;                     /* вплотную справа от последней капсулы */
+  height: 24px;
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-end;
-  padding-right: 2px;
-  background: linear-gradient(to right, transparent, var(--clr-catalog-surface) 60%);
+  justify-content: center;
+  min-width: 24px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--clr-catalog-surface);
+  border: 1px solid rgba(40, 79, 68, .10);
   color: var(--clr-catalog-muted);
   font-weight: 600;
+  font-size: 12px;
+  line-height: 1;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--transition);
-}
-
-/* Показываем только при переполнении */
-.catalog-card__panel--info .catalog-card__badges.is-overflow::after {
-  opacity: 1;
 }
 
 /* CALENDAR: на всю свободную область */
@@ -2490,4 +2551,220 @@ button:focus-visible {
 @media (max-width: 991.98px) {
   .item { padding-block: 24px 64px; }
   .item__details-row { margin-top: 16px; }
+}
+
+/* =========================================================
+   20. Модалка заказа
+   ========================================================= */
+.order-modal {
+  border-radius: var(--radius);
+  border: 1px solid var(--clr-line);
+  background: var(--clr-bg);
+}
+.order-modal .modal-header {
+  border-bottom: 1px solid var(--clr-line);
+  padding: 18px 22px;
+}
+.order-modal .modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--clr-dark);
+  margin: 0;
+}
+.order-modal .modal-body {
+  padding: 18px 22px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.order-modal .modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--clr-line);
+  flex-wrap: wrap;
+}
+
+.order-modal__total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--clr-muted);
+}
+.order-modal__total strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  color: var(--clr-accent);
+  font-weight: 600;
+}
+.order-modal__actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Группы */
+.order-modal__group {
+  border: none;
+  border-top: 1px solid var(--clr-line);
+  margin: 0;
+  padding: 14px 0 0;
+}
+.order-modal__group:first-of-type { border-top: none; padding-top: 0; }
+.order-modal__group + .order-modal__group { margin-top: 14px; }
+
+.order-modal__legend {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--clr-muted);
+  margin: 0 0 10px;
+  padding: 0;
+  width: 100%;
+}
+
+.order-modal__dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.order-modal__dates label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--clr-muted);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.order-modal__dates input {
+  padding: 8px 10px;
+  border: 1px solid var(--clr-line);
+  border-radius: var(--radius-sm);
+  background: var(--clr-bg);
+  color: var(--clr-dark);
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.order-modal__hint {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  color: var(--clr-accent);
+  font-weight: 600;
+}
+
+/* Счётчики */
+.order-modal__counter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--clr-dark);
+}
+.order-modal__counter > span:first-child { flex: 1; }
+.order-modal__qty-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--clr-line);
+  border-radius: 50%;
+  background: var(--clr-surface);
+  color: var(--clr-dark);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.order-modal__qty-btn:hover {
+  background: var(--clr-accent);
+  border-color: var(--clr-accent);
+  color: #fff;
+}
+.order-modal__qty {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--clr-dark);
+}
+
+/* Чекбоксы опций */
+.order-modal__checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--clr-dark);
+  cursor: pointer;
+  line-height: 1.5;
+}
+.order-modal__checkbox input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--clr-accent);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.order-modal__disc {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(40, 79, 68, .12);
+  color: var(--clr-accent);
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* Разбивка */
+.order-modal__summary {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--clr-line);
+}
+.order-modal__summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.order-modal__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13.5px;
+  color: var(--clr-dark);
+}
+.order-modal__row span:last-child {
+  white-space: nowrap;
+  font-weight: 600;
+}
+.order-modal__row--disc {
+  color: var(--clr-accent);
+  font-weight: 600;
+}
+.order-modal__row--disc span:last-child { color: var(--clr-accent); }
+
+/* Мобильный */
+@media (max-width: 575.98px) {
+  .order-modal .modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .order-modal__actions {
+    margin-left: 0;
+    width: 100%;
+  }
+  .order-modal__actions .btn { flex: 1; }
+  .order-modal__dates {
+    grid-template-columns: 1fr;
+  }
 }
